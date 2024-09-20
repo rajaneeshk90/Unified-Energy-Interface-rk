@@ -1,0 +1,148 @@
+{
+  "context": {
+    "domain": "uei:p2p-trading",
+    "action": "on_confirm",
+    "location": {
+      "country": {
+        "name": "India",
+        "code": "IND"
+      }
+    },
+    "city": "std:080",
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://api.example-bpp.com/pilot/bpp/",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z"
+  },
+  "message": {
+    "order": {
+      "id": "6743e9e2-4fb5-487c-92b7",
+      "provider": {
+        "id": "provider1",
+        "descriptor": {
+          "name": "Mukesh Shankar",
+          "short_desc": "Household rooftop solar energy",
+          "images": [
+            {
+              "url": "https://provider1.in/images/logo.png"
+            }
+          ]
+        }
+      },
+      "items": [
+        {
+          "id": "uid_xyz",
+          "price": {
+            "value": "7",
+            "currency": "INR/kWH"
+          },
+          "quantity": {
+            "available": {
+              "measure": {
+                "value": "3000",
+                "unit": "kWh"
+              }
+            },
+            "selected": {
+              "measure": {
+                "value": "1000",
+                "unit": "kWh"
+              }
+            }
+          }
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "1",
+          "customer": {
+            "person": {
+              "name": "Rohit kumar"
+            },
+            "contact": {
+              "phone": "+91-1276522222"
+            }
+          },
+          "stops": [
+            {
+              "type": "start",
+              "time": {
+                "timestamp": "2014-10-04T10:00:00"
+              }
+            },
+            {
+              "type": "end",
+              "time": {
+                "timestamp": "2014-10-04T18:00:00"
+              }
+            }
+          ],
+          "state": {
+            "descriptor": {
+              "code": "Order-Placed"
+            }
+          }
+        }
+      ],
+      "billing": {
+        "name": "Rohit kumar",
+        "email": "rohit@example.com",
+        "phone": "+91-1276522222"
+      },
+      "quote": {
+        "price": {
+          "value": "7000",
+          "currency": "INR"
+        },
+        "breakup": [
+          {
+            "item": {
+              "descriptor": {
+                "name": "Estimated units consumed"
+              },
+              "quantity": {
+                "selected": {
+                  "measure": {
+                    "value": "1000",
+                    "unit": "kWh"
+                  }
+                }
+              },
+              "price": {
+                "value": "7",
+                "currency": "INR/kWH"
+              }
+            },
+            "price": {
+              "value": "7000",
+              "currency": "INR"
+            }
+          }
+        ]
+      },
+      "payments": [
+        {
+          "url": "https://payment.gateway.in?param1=value1",
+          "type": "PRE-ORDER",
+          "status": "NOT-PAID",
+          "params": {
+            "amount": "7000",
+            "currency": "INR"
+          }
+        }
+      ],
+      "cancellation_terms": [
+        {
+          "external_ref": {
+            "mimetype": "text/html",
+            "url": "https://example.in/cancellation_terms.html"
+          }
+        }
+      ]
+    }
+  }
+}
