@@ -1,0 +1,64 @@
+{
+    "context": {
+      "domain": "uei:p2p-trading",
+      "action": "on_cred",
+      "location": {
+        "country": {
+          "name": "India",
+          "code": "IND"
+        }
+      },
+      "city": "std:080",
+      "version": "1.1.0",
+      "bap_id": "example-bap.com",
+      "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+      "bpp_id": "example-energy-bpp.com",
+      "bpp_uri": "https://api.example-bpp.com/pilot/bpp/",
+      "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+      "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+      "timestamp": "2023-07-16T04:41:16Z",
+      "verified": true
+    },
+    "message": {
+      "proofs": [
+        {
+          "verifiableCredential": {
+            "id": "http://example.gov/credentials/3732",
+            "type": ["VerifiableCredential", "ExampleGreenEnergyCredential"],
+            "issuer": {
+              "description": {
+                "name": "did:example:6fb1f712ebe12c27cc26eebfe11"
+              }
+            },
+            "issueDate": "2022-01-01T19:23:24Z",
+            "validFrom": "2022-01-01T19:23:24Z",
+            "validUntil": "2027-01-01T19:23:24Z",
+            "credentialSubject": {
+              "id": "https://subject.example/subject/3921",
+              "tags": [
+                {
+                  "descriptor":{
+                    "name": "ExampleGreenEnergyCredential"
+                  },
+                  "list": [
+                    {
+  
+                      "value": "Renewable Energy Guarantees of Origin"
+                    }
+                  ]
+                }
+              ]
+            },
+            "proof": {
+              "type": "DataIntegrityProof",
+              "created": "2022-11-13T18:19:39Z",
+              "verificationMethod": "did:key:zDnaeyJCMXfq8SgtJWbcLgaJyDGY8BU6iw8rhMyqC4aYumkRu",
+              "cryptosuite": "eddsa-rdfc-2022",
+              "proofPurpose": "assertionMethod",
+              "proofValue": "z5aDaMUdSGSrAarqQCwPEbLbDTvXt2yQGeYyViiVwgWCQ14iNgXqkSWC72uVBW4Vz2y2NdNy9dvnSZkRCSNqJ7HgN"
+            }
+          }
+        }
+      ]
+    }
+  }
