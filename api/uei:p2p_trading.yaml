@@ -839,14 +839,7 @@ paths:
                       required:
                         - action
                 message:
-                  type: object
-                  properties:
-                    proofs:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/CredentialRequest'
-                  required:
-                    - proofs
+                  $ref: '#/components/schemas/CredentialRequest'
               required:
                 - context
                 - message
@@ -2063,14 +2056,7 @@ paths:
                       required:
                         - action
                 message:
-                  type: object
-                  properties:
-                    proofs:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/Credential'
-                  required:
-                    - proofs
+                  $ref: '#/components/schemas/CredentialResponse'
                 error:
                   $ref: '#/components/schemas/Error'
               required:
@@ -2504,21 +2490,72 @@ components:
       description: Describes the schema used to request for a proof from an entity
       type: object
       properties:
-        credential_purpose:
+        asset:
           type: object
           properties:
-            purpose:
-              $ref: '#/components/schemas/Descriptor'
-            document_examples:
+            type:
+              type: string
+            id:
               type: string
           required:
-            - purpose
-            - document_examples
+            - type
+            - id
+        requested_proofs:
+          type: array
+          items:
+            type: object
+            properties:
+              descriptor:
+                $ref: '#/components/schemas/Descriptor'
+              likes:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Descriptor'
+            required:
+              - descriptor
         xinput:
           description: A requester can send a form which can be filled by the sender with relevant details.
           $ref: '#/components/schemas/XInput'
       required:
-        - credential_purpose
+        - asset
+        - requested_proofs
+    CredentialResponse:
+      description: 'Describes a credential of an entity - Person, Organization, Item, Payment etc'
+      type: object
+      properties:
+        asset:
+          type: object
+          properties:
+            type:
+              type: string
+            id:
+              type: string
+          required:
+            - type
+            - id
+        proofs:
+          type: object
+          properties:
+            requested:
+              type: array
+              items:
+                type: object
+                properties:
+                  descriptor:
+                    $ref: '#/components/schemas/Descriptor'
+                  likes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Descriptor'
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Credential'
+          required:
+            - requested
+      required:
+        - asset
+        - proofs
     Customer:
       description: Describes a customer buying/availing a product or a service
       type: object
