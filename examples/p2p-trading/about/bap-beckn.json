@@ -1,0 +1,111 @@
+{
+    "credentials": [
+        {
+            "verifiableCredential": {
+                "@context": [
+                    "https://www.w3.org/2018/credentials/v1",
+                    "https://cord.network/2023/cred/v1"
+                ],
+                "type": [
+                    "VerifiableCredential"
+                ],
+                "issuer": "did:cord:3zKcL2oAsvZZwFA5uPxtysk5jsai2TGx4AvrpJcBYmAwzGyN",
+                "issuanceDate": "2024-10-28T11:50:27.756Z",
+                "credentialSubject": {
+                    "name": "Anand",
+                    "email": "anand@pulseenergy.io",
+                    "id": "did:cord:3zKcL2oAsvZZwFA5uPxtysk5jsai2TGx4AvrpJcBYmAwzGyN",
+                    "Certificate": {
+                        "name": "ISO 50001 Certificate",
+                        "value": "ISO Certified",
+                        "Description": "an ISO 50001 certificate can provide assurance to sellers or energy providers that a buyer is committed to managing their energy responsibly."
+                    },
+                    "@context": {
+                        "vocab": "schema:cord:s35n99iTJqihH9akBaX5XPW1oqFsNSeW6xwtEJ7XFmAyx9ZUG# "
+                    }
+                },
+                "validFrom": "2024-10-28T11:50:27.756Z",
+                "validUntil": "2025-10-28T11:50:27.756Z",
+                "metadata": {},
+                "credentialSchema": {
+                    "$id": "schema:cord:s35n99iTJqihH9akBaX5XPW1oqFsNSeW6xwtEJ7XFmAyx9ZUG",
+                    "title": "Hyperbeckn-certificates:05f13245-64cb-416b- a983-36fe9a7bf913",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "Certificate": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                },
+                                "Description": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "required": [],
+                    "type": "object",
+                    "additionalProperties": false,
+                    "$schema": "http://cord.network/draft-01/schema#"
+                },
+                "credentialHash": "0xe20dce5bf146fb0e5658c818a5c66bb2616068953c035c02fdb35b351a9ec 38d",
+                "id": "stmt:cord:s3eT4TZ9FvGiLZbx66Tca1ZGrUuXBnGdHQFpEd3JNbrGHkujE",
+                "proof": [
+                    {
+                        "type": "Ed25519Signature2020",
+                        "created": "Mon Oct 28 2024 11:50:27 GMT+0000 (Coordinated Universal Time)",
+                        "proofPurpose": "sr25519",
+                        "verificationMethod": "did:cord:3zKcL2oAsvZZwFA5uPxtysk5jsai2TGx4AvrpJcBYmAwzGyN#0xaebd4 79b52b61ec4954a5478e6285bff0a5508b53f30ee5c552061efd4c89842",
+                        "proofValue": "zxhKE2MzskMb5uLS8yyXYAiPXusL2UQymAJgMVbD8dbCejzBtWAXeKAc48kJ vyzdJcrNHjgFAyxaxf7x4V74gwsQ"
+                    },
+                    {
+                        "elementUri": "stmt:cord:s3eT4TZ9FvGiLZbx66Tca1ZGrUuXBnGdHQFpEd3JNbrGHkujE:e20d ce5bf146fb0e5658c818a5c66bb2616068953c035c02fdb35b351a9ec38d",
+                        "spaceUri": "space:cord:c35h1XGuUXDHwtJTre7dwsb7KqZM5DWYA4kpPRuSx6BZJnXTg",
+                        "type": "CordProof2024",
+                        "schemaUri": "schema:cord:s35n99iTJqihH9akBaX5XPW1oqFsNSeW6xwtEJ7XFmAyx9ZUG",
+                        "creatorUri": "did:cord:3zKcL2oAsvZZwFA5uPxtysk5jsai2TGx4AvrpJcBYmAwzGyN",
+                        "digest": "0xe20dce5bf146fb0e5658c818a5c66bb2616068953c035c02fdb35b351a9ec 38d",
+                        "identifier": "stmt:cord:s3eT4TZ9FvGiLZbx66Tca1ZGrUuXBnGdHQFpEd3JNbrGHkujE",
+                        "genesisHash": "0x99f72c0a4e8ec69365bb2b480302b719465d838cfefa9db0c5a91eed5378 285c"
+                    },
+                    {
+                        "defaultDigest": "0xe9935e1e1851d959550914a707cef8775af0f475322f97ee32cd5e2a009775 4c",
+                        "hashes": [
+                            "0x43cffb55e30600510f18efe8d02736712efce5a4844141832d0dc7d1ac7d06 d4",
+                            "0x49db545481501dad260b11b893ad092d088d96ab0474f26982f57dc600f5 c113",
+                            "0x5eccff519ff0b38d26d7727cbc98460988a3bb0790b6afff445c8cc021fd5a8 e",
+                            "0x631c3dfe066ff09d53785f292e95334370369ea6ed2e99eb0d4912d18fde2 e0f",
+                            "0x7ded6283b53f1e8038e209efa3614f3038eeff74673b1de25e4aa36f308771 41",
+                            "0x807d205232ea09d55557084bba974f3730c1b5a46c8dfb757d0f0f2fe281d9 ca",
+                            "0x998ad632f256a694c4b78ca8e6651f86f57b39cd9568743818b681f03af33 a24"
+                        ],
+                        "nonceMap": {
+                            "0x6d352703e86a0e379e6a1f069107f89ec26c7951e591a5d858341c4b98fe2 5b9": "a80bca46-e880-4e16-9438-3188751e4db4",
+                            "0x86725e9d1e39abce2c72852229c642c41dfb83ad924022d6ad90fea7bdd17 a5f": "80f3db78-0f43-47e0-a8e0-58b5f8d4748e",
+                            "type": "CordSDRProof2024",
+                            "0xff5fcce3427c4172c94c185578a0e1ea22a0cc6263dd919e97456f747954ca dc": "f2c1baba-fda1-468a-a2c8-d894e3403211",
+                            "0x9e5f083a43f9c82b6cc169f01343a09d78ce2ea1fec7c6b576f7792232d154 93": "fd30c1aa-6d91-4142-a09d-2d0414f5de8c",
+                            "0x7a80041f2b3ec20a0c6c39e1ac004f3395e9864bab6b6b3bfda00c3df93b3 f32": "bc325b41-b853-4119-9c68-2e7fa74fc3a3",
+                            "0x29c9857423b6db1c8d3eec17800e1532d5ade35830e3dcdb38ba5a375f4a 0f1a": "83d0485a-d3db-45e6-bfa1-492fac3eb90b",
+                            "0x9af4bf7638d2aa9662ca515b4e843fc7c83a78c18914d2e1981f8e4412bfb2a 9": "3dcc10e1-f6c5-40a6-8243-ae113ce11c61"
+                        },
+                        "genesisHash": "0x99f72c0a4e8ec69365bb2b480302b719465d838cfefa9db0c5a91eed5378 285c"
+                    }
+                ]
+            }
+        }
+    ],
+    "layer2Config": ""
+}

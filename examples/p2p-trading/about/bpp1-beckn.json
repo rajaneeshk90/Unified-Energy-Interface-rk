@@ -1,0 +1,110 @@
+{
+    "credentials": [
+        {
+            "verfiablecredential": {
+                "@context": [
+                    "https://www.w3.org/2018/credentials/v1",
+                    "https://cord.network/2023/cred/v1"
+                ],
+                "type": [
+                    "VerifiableCredential"
+                ],
+                "issuer": "did:cord:3zKcL2oAsvZZwFA5uPxtysk5jsai2TGx4AvrpJcBYmAwzGyN",
+                "issuanceDate": "2024-10-28T11:49:08.809Z",
+                "credentialSubject": {
+                    "name": "Leela",
+                    "email": "leela@pulseenergy.io",
+                    "id": "did:cord:3zKcL2oAsvZZwFA5uPxtysk5jsai2TGx4AvrpJcBYmAwzGyN",
+                    "Certificate": {
+                        "name": "Energy Certificate",
+                        "value": "UEI Certified",
+                        "Description": "UEI Certified tag provide assurance to buyers that a platform is has passed UEI energy compliance"
+                    },
+                    "@context": {
+                        "vocab": "schema:cord:s35n99iTJqihH9akBaX5XPW1oqFsNSeW6xwtEJ7XFmAyx9ZUG# "
+                    }
+                },
+                "validFrom": "2024-10-28T11:49:08.809Z",
+                "validUntil": "2025-10-28T11:49:08.809Z",
+                "credentialSchema": {
+                    "$id": "schema:cord:s35n99iTJqihH9akBaX5XPW1oqFsNSeW6xwtEJ7XFmAyx9ZUG",
+                    "title": "Hyperbeckn-certificates:05f13245-64cb-416b- a983-36fe9a7bf913",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "Certificate": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                },
+                                "Description": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "required": [],
+                    "type": "object",
+                    "additionalProperties": false,
+                    "$schema": "http://cord.network/draft-01/schema#"
+                },
+                "credentialHash": "0xea11aeb3f6a5376d47823dc5e663d08cc83347120cf99f490cba5436821b8 d82",
+                "id": "stmt:cord:s3cpsikhifny4oSSR5eNFxvKEoPmTTxc2aBPuCNHUxSXfPs6f",
+                "proof": [
+                    {
+                        "type": "Ed25519Signature2020",
+                        "created": "Mon Oct 28 2024 11:49:08 GMT+0000 (Coordinated Universal Time)",
+                        "proofPurpose": "sr25519",
+                        "verificationMethod": "did:cord:3zKcL2oAsvZZwFA5uPxtysk5jsai2TGx4AvrpJcBYmAwzGyN#0xaebd4 79b52b61ec4954a5478e6285bff0a5508b53f30ee5c552061efd4c89842",
+                        "proofValue": "z4FnD9Ndd8ZP9L7k7kiJRPuGnei8W53f291skpXth7czvYEJm4MvJg6UQJ9LhP A5ysMCE9iPHK9ogYDM2bUpyuKZ2"
+                    },
+                    {
+                        "type": "CordProof2024",
+                        "elementUri": "stmt:cord:s3cpsikhifny4oSSR5eNFxvKEoPmTTxc2aBPuCNHUxSXfPs6f:ea11ae b3f6a5376d47823dc5e663d08cc83347120cf99f490cba5436821b8d82",
+                        "spaceUri": "space:cord:c35h1XGuUXDHwtJTre7dwsb7KqZM5DWYA4kpPRuSx6BZJnXTg",
+                        "schemaUri": "schema:cord:s35n99iTJqihH9akBaX5XPW1oqFsNSeW6xwtEJ7XFmAyx9ZUG",
+                        "creatorUri": "did:cord:3zKcL2oAsvZZwFA5uPxtysk5jsai2TGx4AvrpJcBYmAwzGyN",
+                        "digest": "0xea11aeb3f6a5376d47823dc5e663d08cc83347120cf99f490cba5436821b8 d82",
+                        "identifier": "stmt:cord:s3cpsikhifny4oSSR5eNFxvKEoPmTTxc2aBPuCNHUxSXfPs6f",
+                        "genesisHash": "0x99f72c0a4e8ec69365bb2b480302b719465d838cfefa9db0c5a91eed5378 285c"
+                    },
+                    {
+                        "defaultDigest": "0x4954bf0bc529d53085e696cd28e7aea4dfb9c7ff8ee83d08804428ebc637 1b5d",
+                        "hashes": [
+                            "0x035b1223ffca60865f86b9e5e962a7c997186092aa247a5cb82b7752e565d 60b",
+                            "0x37e3e6f7acb312c80ec9742f976e500f20cfe58d49026b62360d0629961d0 697",
+                            "0x49245c52fdb5a76d7926741d15e8d37649378a7a053ba4f95f7fc7e0adeaee fc",
+                            "0x8a7e1eae0a5fb34d330b1fc3a85f9d31c4e11214cf3fb8b1526261bcbf2abee6 ",
+                            "0x97819dbec1cc2171cff185a46341792612f8400bc84b23a687a8c97b7198eef c",
+                            "0xda57510779e3aabf83cb70a048f8434ab0956bd4010b7e8650ea24a1cf30f7 41",
+                            "0xe7856aa31d8fb52d886bfa7fb6eb6bc5d2b3f476f487f9d4a20f07231fd252f 2"
+                        ],
+                        "nonceMap": {
+                            "type": "CordSDRProof2024",
+                            "0x6d352703e86a0e379e6a1f069107f89ec26c7951e591a5d858341c4b98fe2 5b9": "1101e02c-1b55-44c7-9408-e0668f866c73",
+                            "0x768325e57b7531cbd6c96e792061c446917fa6c31bd5da678fd592ceadda0 b9d": "e6a3f5b3-f109-4063-a55e-0f44318667c1",
+                            "0x726f866194ea028b588b7d756516db4c8cec923424f179ed8f0c4fbcd0224 a3a": "d260d45e-ec7e-4388-ab31-345623c8d019",
+                            "0xe1ab9b2e74962dc40b526f30f62db3e5800023191abcf14196edb326c93f5 455": "8fc9e4fa-6f25-491b-addd-480b5089aca3",
+                            "0xb79811f4504307ab1f4ad843e75f0006746e56fed51806c2ee48cc0d23595 96c": "9f96d442-7d0d-4e2f-97fe-d52c37b94d3e",
+                            "0xc9d42cc0b18940c878450a8f5d805e7dcf264c35ad2bcaa152c227302227e c93": "1526c2b2-0239-478b-95bc-529807dabc19",
+                            "0x6afb2be1b66af225fe68658492b33920bc9034c342b99d79e55815397882 9733": "cab08668-d17d-4f77-bd73-b8afe8da6313"
+                        },
+                        "genesisHash": "0x99f72c0a4e8ec69365bb2b480302b719465d838cfefa9db0c5a91eed5378 285c"
+                    }
+                ]
+            }
+        }
+    ],
+    "layer2Config": ""
+}
