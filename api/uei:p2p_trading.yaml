@@ -1730,7 +1730,6 @@ paths:
                         - quote
                         - billing
                         - payments
-                        - cancellation_terms
                         - id
                   required:
                     - order
@@ -3395,7 +3394,6 @@ components:
           items:
             $ref: '#/components/schemas/TagGroup'
       required:  
-        - id
         - collected_by
         - type
         - status
