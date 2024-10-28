@@ -1230,11 +1230,6 @@ paths:
                         - not:
                             required:
                               - id
-                      required:
-                        - quote
-                        - billing
-                        - payments
-                        - cancellation_terms
                   required:
                     - order
                 error:
@@ -1401,8 +1396,6 @@ paths:
                       required:
                         - quote
                         - billing
-                        - payments
-                        - cancellation_terms
                         - id
                   required:
                     - order
@@ -2380,7 +2373,7 @@ components:
     Context:
       description: "Every API call in beckn protocol has a context. It provides a high-level overview to the receiver about the nature of the intended transaction. Typically, it is the BAP that sets the transaction context based on the consumer's location and action on their UI. But sometimes, during unsolicited callbacks, the BPP also sets the transaction context but it is usually the same as the context of a previous full-cycle, request-callback interaction between the BAP and the BPP. The context object contains four types of fields. <ol><li>Demographic information about the transaction using fields like `domain`, `country`, and `region`.</li><li>Addressing details like the sending and receiving platform's ID and API URL.</li><li>Interoperability information like the protocol version that implemented by the sender and,</li><li>Transaction details like the method being called at the receiver's endpoint, the transaction_id that represents an end-to-end user session at the BAP, a message ID to pair requests with callbacks, a timestamp to capture sending times, a ttl to specifiy the validity of the request, and a key to encrypt information if necessary.</li></ol> This object must be passed in every interaction between a BAP and a BPP. In HTTP/S implementations, it is not necessary to send the context during the synchronous response. However, in asynchronous protocols, the context must be sent during all interactions,"
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         domain:
           description: Domain code that is relevant to this transaction context
@@ -2743,7 +2736,7 @@ components:
     FulfillmentState:
       description: Describes the state of fulfillment
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         descriptor:
           allOf:
@@ -2752,6 +2745,7 @@ components:
                 code:
                   type: string
                   enum:
+                    - ORDER_RECEIVED
                     - ORDER_PLACED
                     - ORDER_COMPLETED
                     - CANCELLED
@@ -3126,7 +3120,7 @@ components:
     Order:
       description: Describes a legal purchase order. It contains the complete details of the legal contract created between the buyer and the seller.
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         id:
           type: string
@@ -3278,10 +3272,6 @@ components:
                               minItems: 1
                               items:
                                 $ref: '#/components/schemas/Image'
-                      required:
-                        - name
-                        - images
-                        - short_desc
               required:
                 - id
                 - descriptor
@@ -3318,7 +3308,6 @@ components:
               items:
                 required:
                   - id
-                  - type
       required:
         - provider
         - items
@@ -3490,7 +3479,7 @@ components:
     Provider:
       description: Describes the catalog of a business.
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         id:
           type: string
@@ -3589,10 +3578,6 @@ components:
               - price
         ttl:
           $ref: '#/components/schemas/Duration'
-      required:
-        - price
-        - breakup
-        - ttl
     Rating:
       description: Describes the rating of an entity
       type: object
@@ -3881,102 +3866,110 @@ components:
       description: Describes a Verifiable Credential
       type: object
       properties:
+        context:
+          type: array
+          items:
+            type: string
         id:
           description: 'A unique identifier for the credential (e.g., UUID or URI).'
           type: string
         type:
-          description: 'Type of the credential. Its defined as an array to handle cases where a credential falls under multiple types. for example, VerifiableCredential, OpenBadgeCredential.'
+          description: Types of the credential.
           type: array
           items:
             type: string
         description:
-          $ref: '#/components/schemas/Descriptor'
+          anyOf:
+            - type: string
+            - type: object
+            - type: array
+              items:
+                type: object
         issuer:
-          type: object
-          description: Entity that issued the credential
-          properties:
-            description:
-              $ref: '#/components/schemas/Descriptor'
-            address:
-              $ref: '#/components/schemas/Address'
-            state:
-              $ref: '#/components/schemas/State'
-            city:
-              $ref: '#/components/schemas/City'
-            contact:
-              $ref: '#/components/schemas/Contact'
-            registration_number:
-              type: string
-              description: 'The registration number of the organization, if applicable.'
-            website:
-              type: string
-              format: uri
-              description: The official website of the issuing organization.
-        issueDate:
+          anyOf:
+            - type: string
+            - type: object
+        issuanceDate:
           type: string
-          format: date-time
           description: The date when the credential was issued.
         validFrom:
           type: string
-          format: date-time
           description: 'The expiration date of the credential, if applicable.'
         validUntil:
           type: string
-          format: date-time
           description: 'The expiration date of the credential, if applicable.'
         credentialSubject:
-          type: array
-          items:
-            properties:
-              id:
+          anyOf:
+            - type: string
+            - type: object
+            - type: array
+              items:
                 type: string
-              description:
-                $ref: '#/components/schemas/Descriptor'
-              tags:
-                $ref: '#/components/schemas/TagGroup'
-        claims:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagGroup'
+            - type: array
+              items:
+                type: object
+        credentialSchema:
+          anyOf:
+            - type: object
+            - type: array
+              items:
+                type: object
         proof:
-          type: object
-          description: Cryptographic proof of the credential's authenticity
-          properties:
-            created:
-              type: string
-              format: date-time
-              description: Timestamp of when the proof was generated
-            proofPurpose:
-              type: string
-              description: 'This describes the intent of the proof. For example, it could indicate that the proof is used for asserting a particular claim about the credential or verifying its authenticity.'
-            type:
-              type: string
-              description: 'This indicates the specific algorithm or method used for the cryptographic proof (e.g., Ed25519Signature2018). It tells the verifier which cryptographic approach to use when verifying the proof.'
-            verificationMethod:
-              type: string
-              description: This specifies how the proof can be verified. It may include references to public keys or other mechanisms that a verifier would need to validate the proof.
-            proofValue:
-              type: string
-              description: This contains the actual cryptographic signature or value that represents the proof. It's the output of the cryptographic process that will be checked against the claims and the verification method to confirm authenticity.
+          anyOf:
+            - type: object
+              description: Cryptographic proof of the credential's authenticity
+              properties:
+                created:
+                  type: string
+                  format: date-time
+                  description: Timestamp of when the proof was generated
+                proofPurpose:
+                  type: string
+                  description: 'This describes the intent of the proof. For example, it could indicate that the proof is used for asserting a particular claim about the credential or verifying its authenticity.'
+                type:
+                  type: string
+                  description: 'This indicates the specific algorithm or method used for the cryptographic proof (e.g., Ed25519Signature2018). It tells the verifier which cryptographic approach to use when verifying the proof.'
+                verificationMethod:
+                  type: string
+                  description: This specifies how the proof can be verified. It may include references to public keys or other mechanisms that a verifier would need to validate the proof.
+                proofValue:
+                  type: string
+                  description: This contains the actual cryptographic signature or value that represents the proof. It's the output of the cryptographic process that will be checked against the claims and the verification method to confirm authenticity.
+            - type: array
+              items:
+                type: object
         termsOfUse:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagGroup'
+          anyOf:
+            - type: string
+            - type: object
+            - type: array
+              items:
+                type: string
+            - type: array
+              items:
+                type: object
         credentialStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/Descriptor'
+          anyOf:
+            - type: string
+            - type: object
+            - type: array
+              items:
+                type: string
+            - type: array
+              items:
+                type: object
         evidence:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagGroup'
-      required:
-        - id
-        - type
-        - issuer
-        - validUntil
-        - credentialSubject
-        - proof
+          anyOf:
+            - type: string
+            - type: object
+            - type: array
+              items:
+                type: string
+            - type: array
+              items:
+                type: object
+        credentialHash:
+          type: string
     Vehicle:
       description: 'Describes a vehicle is a device that is designed or used to transport people or cargo over land, water, air, or through space.<br>This has properties like category, capacity, make, model, size,variant,color,energy_type,registration'
       type: object
