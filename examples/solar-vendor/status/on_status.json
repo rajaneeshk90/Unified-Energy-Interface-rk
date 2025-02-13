@@ -1,0 +1,218 @@
+{
+    "context": {
+        "domain": "solar-rooftop:uei",
+        "action": "on_status",
+        "location": {
+            "country": {
+                "name": "India",
+                "code": "IND"
+            }
+        },
+        "city": "std:080",
+        "version": "1.1.0",
+        "bap_id": "example-bap.com",
+        "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+        "bpp_id": "example-bpp.com",
+        "bpp_uri": "https://example-bpp.com",
+        "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+        "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+        "timestamp": "2023-07-16T04:41:16Z"
+    },
+    "message": {
+        "order": {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "provider": {
+                "id": "example_provider_id",
+                "descriptor": {
+                    "name": "Example Company",
+                    "short_desc": "Example Company Pvt Ltd",
+                    "images": [
+                        {
+                            "url": "https://example-company.com/images/logo.png"
+                        }
+                    ]
+                },
+                "rating": "4.3/5"
+            },
+            "items": [
+                {
+                    "id": "1",
+                    "price": {
+                        "minimum_value": "50000",
+                        "maximum_value": "200000",
+                        "currency": "INR"
+                    },
+                    "tags": [
+                        {
+                            "descriptor": {
+                                "code": "panel-specification"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "capacity"
+                                    },
+                                    "value": "4KW"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "panel-type"
+                                    },
+                                    "value": "Monocrystalline"
+                                }
+                            ]
+                        },
+                        {
+                            "descriptor": {
+                                "code": "misc"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "battery_backup"
+                                    },
+                                    "value": "true"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "net_metering"
+                                    },
+                                    "value": "true"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "remote_monitoring"
+                                    },
+                                    "value": "true"
+                                }
+                            ]
+                        }
+                    ],
+                    "add_ons": [
+                        {
+                            "id": "1",
+                            "descriptor": {
+                                "name": "Financial Assistance",
+                                "code": "financial-assistance",
+                                "short_desc": "Government subsidy of 20% applicable on total cost"
+                            }
+                        },
+                        {
+                            "id": "2",
+                            "descriptor": {
+                                "name": "Annual Maintenance Contract",
+                                "code": "AMC",
+                                "short_desc": "Includes periodic inspection, cleaning, and performance checks.",
+                                "long_desc": "Panel cleaning every 6 months,Inverter performance check,Battery health inspection,Wiring and safety audit"
+                            },
+                            "price": {
+                                "currency": "INR",
+                                "value": "5000"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "fulfillments": [
+                {
+                    "id": "1",
+                    "stops": [
+                        {
+                            "type": "end",
+                            "time": {
+                                "duration": "P3M"
+                            },
+                            "location": {
+                                "gps": "12.344445,21.2324445",
+                                "address": "11th street, sector 4, kormangala",
+                                "city": {
+                                    "name": "Bangalore"
+                                },
+                                "state": {
+                                    "name": "Karnataka"
+                                }
+                            }
+                        }
+                    ],
+                    "customer": {
+                        "person": {
+                            "name": "Ramesh Sharma"
+                        },
+                        "contact": {
+                            "phone": "+91-9887766554"
+                        }
+                    },
+                    "state": {
+                        "descriptor": {
+                            "code": "Agent-Assigned"
+                        }
+                    },
+                    "agent": {
+                        "person": {
+                            "name": "Vinod"
+                        },
+                        "contact": {
+                            "phone": "+91-9887766554"
+                        }
+                    }
+                }
+            ],
+            "quote": {
+                "price": {
+                    "value": "162750",
+                    "currency": "INR"
+                },
+                "breakup": [
+                    {
+                        "title": "Base-Price",
+                        "item": {
+                            "id": "1"
+                        },
+                        "price": {
+                            "value": "150000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Add-On",
+                        "item": {
+                            "id": 1,
+                            "add_ons": [
+                                {
+                                    "id": "2"
+                                }
+                            ]
+                        },
+                        "price": {
+                            "value": "5000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "GST",
+                        "price": {
+                            "currency": "INR",
+                            "value": "7750"
+                        }
+                    }
+                ]
+            },
+            "billing": {
+                "name": "Ramesh sharma",
+                "email": "abc@example.com",
+                "phone": "+91-9876522222"
+            },
+            "payments": [
+                {
+                    "collected_by": "bpp",
+                    "type": "POST-FULFILLMENT",
+                    "status": "NOT-PAID",
+                    "params": {
+                        "amount": "162750",
+                        "currency": "INR"
+                    }
+                }
+            ]
+        }
+    }
+}

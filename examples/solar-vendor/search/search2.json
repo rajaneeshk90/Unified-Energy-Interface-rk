@@ -1,0 +1,97 @@
+{
+    "context": {
+        "domain": "solar-rooftop:uei",
+        "action": "search",
+        "location": {
+            "country": {
+                "name": "India",
+                "code": "IND"
+            }
+        },
+        "city": "std:080",
+        "version": "1.1.0",
+        "bap_id": "example-bap.com",
+        "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+        "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+        "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+        "timestamp": "2023-07-16T04:41:16Z"
+    },
+    "message": {
+        "intent": {
+            "category": {
+                "descriptor": {
+                    "code": "solar-rooftop"
+                }
+            },
+            "item": {
+                "price": {
+                    "currency": "INR",
+                    "minimum_value": "50000",
+                    "maximum_value": "200000"
+                },
+                "tags": [
+                    {
+                        "descriptor": {
+                            "code": "panel-specification"
+                        },
+                        "list": [
+                            {
+                                "descriptor": {
+                                    "code": "capacity"
+                                },
+                                "value": "4KW"
+                            },
+                            {
+                                "descriptor": {
+                                    "code": "panel-type"
+                                },
+                                "value": "Monocrystalline"
+                            }
+                        ]
+                    },
+                    {
+                        "descriptor": {
+                            "code": "misc"
+                        },
+                        "list": [
+                            {
+                                "descriptor": {
+                                    "code": "battery_backup"
+                                },
+                                "value": "true"
+                            },
+                            {
+                                "descriptor": {
+                                    "code": "net_metering"
+                                },
+                                "value": "true"
+                            },
+                            {
+                                "descriptor": {
+                                    "code": "remote_monitoring"
+                                },
+                                "value": "true"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "location": {
+                "city": {
+                    "code": "std:080",
+                    "name": "Bangalore"
+                }
+            },
+            "fulfillment": {
+                "stops": [
+                    {
+                        "type": "end",
+                        "time": {
+                            "duration": "P3M"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
