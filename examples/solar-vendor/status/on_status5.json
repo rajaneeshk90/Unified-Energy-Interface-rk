@@ -1,7 +1,7 @@
 {
     "context": {
         "domain": "solar-rooftop:uei",
-        "action": "on_confirm",
+        "action": "on_status",
         "location": {
             "country": {
                 "code": "IND"
@@ -44,10 +44,6 @@
                     "descriptor": {
                         "name": "Residential Solar Panel Installation"
                     },
-                    "price": {
-                        "estimated_value": "80000",
-                        "currency": "INR"
-                    },
                     "add_ons": [
                         {
                             "id": "1",
@@ -72,7 +68,19 @@
                                     "descriptor": {
                                         "code": "system-capacity"
                                     },
-                                    "value": "2KW"
+                                    "value": "upto 10KW"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "recommended-system-size"
+                                    },
+                                    "value": "6KW"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "estimated-annual-energy-production"
+                                    },
+                                    "value": "9000KWh"
                                 }
                             ]
                         },
@@ -86,6 +94,36 @@
                                         "code": "property-type"
                                     },
                                     "value": "Residential"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "roof-type"
+                                    },
+                                    "value": "flat"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "roof-area"
+                                    },
+                                    "value": "1500sqft"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "shading-analysis"
+                                    },
+                                    "value": "minimal-obstruction"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "roof-strength"
+                                    },
+                                    "value": "suitable"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "sunlight-exposure"
+                                    },
+                                    "value": "high"
                                 }
                             ]
                         },
@@ -112,6 +150,55 @@
                                         "code": "financial-assistance"
                                     },
                                     "value": "true"
+                                }
+                            ]
+                        },
+                        {
+                            "descriptor": {
+                                "code": "equipment-details"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "solar-panels",
+                                        "short_desc": "400W Monocrystalline"
+                                    },
+                                    "value": "4"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "invertor",
+                                        "short_desc": "2kW Hybrid Inverter"
+                                    },
+                                    "value": "1"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "mounting-structure",
+                                        "short_desc": "Ballasted Racking"
+                                    },
+                                    "value": "1"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "wiring-and-connectors",
+                                        "short_desc": "Copper Wiring and MC4 Connectors"
+                                    },
+                                    "value": "As required"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "battery",
+                                        "short_desc": "10kWh Lithium-ion"
+                                    },
+                                    "value": "1"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "monitoring-system",
+                                        "short_desc": "Smart Energy Monitor"
+                                    },
+                                    "value": "1"
                                 }
                             ]
                         }
@@ -153,7 +240,15 @@
                     },
                     "state": {
                         "descriptor": {
-                            "code": "Site-Visit-Planned"
+                            "code": "Installation-Completed"
+                        }
+                    },
+                    "agent": {
+                        "person": {
+                            "name": "Vinod"
+                        },
+                        "contact": {
+                            "phone": "+91-9887766554"
                         }
                     }
                 }
@@ -165,12 +260,44 @@
                 },
                 "breakup": [
                     {
-                        "title": "Base-Price",
-                        "item": {
-                            "id": "1"
-                        },
+                        "title": "Solar Panels",
                         "price": {
-                            "value": "80000",
+                            "value": "40000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Invertor",
+                        "price": {
+                            "value": "10000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Mounting Structure",
+                        "price": {
+                            "value": "8000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Wiring and Connectors",
+                        "price": {
+                            "value": "4000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "battery",
+                        "price": {
+                            "value": "15000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Monitoring System",
+                        "price": {
+                            "value": "3000",
                             "currency": "INR"
                         }
                     },
@@ -211,6 +338,23 @@
                             "descriptor": {
                                 "code": "Survey-Charge",
                                 "short_desc": "This amount will not be adjusted in the installation charge."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "collected_by": "bpp",
+                    "type": "POST-FULFILLMENT",
+                    "status": "PAID",
+                    "params": {
+                        "amount": "83000",
+                        "currency": "INR",
+                        "transaction_id": "t0124"
+                    },
+                    "tags": [
+                        {
+                            "descriptor": {
+                                "code": "Installation-Charge"
                             }
                         }
                     ]

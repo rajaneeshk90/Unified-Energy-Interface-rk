@@ -4,11 +4,12 @@
         "action": "on_status",
         "location": {
             "country": {
-                "name": "India",
                 "code": "IND"
+            },
+            "city": {
+                "code": "std:080"
             }
         },
-        "city": "std:080",
         "version": "1.1.0",
         "bap_id": "example-bap.com",
         "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
@@ -29,6 +30,9 @@
                     "images": [
                         {
                             "url": "https://example-company.com/images/logo.png"
+                        },
+                        {
+                            "url": "https://example-company.com/images/site.png"
                         }
                     ]
                 },
@@ -37,92 +41,177 @@
             "items": [
                 {
                     "id": "1",
-                    "price": {
-                        "minimum_value": "50000",
-                        "maximum_value": "200000",
-                        "currency": "INR"
+                    "descriptor": {
+                        "name": "Residential Solar Panel Installation"
                     },
-                    "tags": [
-                        {
-                            "descriptor": {
-                                "code": "panel-specification"
-                            },
-                            "list": [
-                                {
-                                    "descriptor": {
-                                        "code": "capacity"
-                                    },
-                                    "value": "4KW"
-                                },
-                                {
-                                    "descriptor": {
-                                        "code": "panel-type"
-                                    },
-                                    "value": "Monocrystalline"
-                                }
-                            ]
-                        },
-                        {
-                            "descriptor": {
-                                "code": "misc"
-                            },
-                            "list": [
-                                {
-                                    "descriptor": {
-                                        "code": "battery_backup"
-                                    },
-                                    "value": "true"
-                                },
-                                {
-                                    "descriptor": {
-                                        "code": "net_metering"
-                                    },
-                                    "value": "true"
-                                },
-                                {
-                                    "descriptor": {
-                                        "code": "remote_monitoring"
-                                    },
-                                    "value": "true"
-                                }
-                            ]
-                        }
-                    ],
                     "add_ons": [
                         {
                             "id": "1",
                             "descriptor": {
-                                "name": "Financial Assistance",
-                                "code": "financial-assistance",
-                                "short_desc": "Government subsidy of 20% applicable on total cost"
-                            }
-                        },
-                        {
-                            "id": "2",
-                            "descriptor": {
-                                "name": "Annual Maintenance Contract",
-                                "code": "AMC",
-                                "short_desc": "Includes periodic inspection, cleaning, and performance checks.",
-                                "long_desc": "Panel cleaning every 6 months,Inverter performance check,Battery health inspection,Wiring and safety audit"
+                                "name": "PCFC",
+                                "code": "Panel Cleaning and Performance Checkups",
+                                "short_desc": "Regular cleaning of solar panels to remove dust, dirt, and debris, ensuring maximum efficiency, along with system diagnostics to check for performance issues and potential faults."
                             },
                             "price": {
                                 "currency": "INR",
-                                "value": "5000"
+                                "value": "2000"
                             }
+                        }
+                    ],
+                    "tags": [
+                        {
+                            "descriptor": {
+                                "code": "system-specification"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "system-capacity"
+                                    },
+                                    "value": "upto 10KW"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "recommended-system-size"
+                                    },
+                                    "value": "6KW"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "estimated-annual-energy-production"
+                                    },
+                                    "value": "9000KWh"
+                                }
+                            ]
+                        },
+                        {
+                            "descriptor": {
+                                "code": "installation-context"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "property-type"
+                                    },
+                                    "value": "Residential"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "roof-type"
+                                    },
+                                    "value": "flat"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "roof-area"
+                                    },
+                                    "value": "1500sqft"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "shading-analysis"
+                                    },
+                                    "value": "minimal-obstruction"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "roof-strength"
+                                    },
+                                    "value": "suitable"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "sunlight-exposure"
+                                    },
+                                    "value": "high"
+                                }
+                            ]
+                        },
+                        {
+                            "descriptor": {
+                                "code": "installer-details"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "empaneled"
+                                    },
+                                    "value": "true"
+                                }
+                            ]
+                        },
+                        {
+                            "descriptor": {
+                                "code": "financial-details"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "financial-assistance"
+                                    },
+                                    "value": "true"
+                                }
+                            ]
+                        },
+                        {
+                            "descriptor": {
+                                "code": "equipment-details"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "solar-panels",
+                                        "short_desc": "400W Monocrystalline"
+                                    },
+                                    "value": "4"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "invertor",
+                                        "short_desc": "2kW Hybrid Inverter"
+                                    },
+                                    "value": "1"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "mounting-structure",
+                                        "short_desc": "Ballasted Racking"
+                                    },
+                                    "value": "1"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "wiring-and-connectors",
+                                        "short_desc": "Copper Wiring and MC4 Connectors"
+                                    },
+                                    "value": "As required"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "battery",
+                                        "short_desc": "10kWh Lithium-ion"
+                                    },
+                                    "value": "1"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "monitoring-system",
+                                        "short_desc": "Smart Energy Monitor"
+                                    },
+                                    "value": "1"
+                                }
+                            ]
                         }
                     ]
                 }
             ],
             "fulfillments": [
                 {
-                    "id": "1",
                     "stops": [
                         {
                             "type": "end",
-                            "time": {
-                                "duration": "P3M"
-                            },
                             "location": {
+                                "area_code": "560004",
                                 "gps": "12.344445,21.2324445",
                                 "address": "11th street, sector 4, kormangala",
                                 "city": {
@@ -130,6 +219,13 @@
                                 },
                                 "state": {
                                     "name": "Karnataka"
+                                }
+                            },
+                            "time": {
+                                "label": "Service Schedule",
+                                "range": {
+                                    "start": "2025-03-22T09:00:00Z ",
+                                    "end": "2025-04-22T18:00:00Z "
                                 }
                             }
                         }
@@ -144,7 +240,7 @@
                     },
                     "state": {
                         "descriptor": {
-                            "code": "Order-Fulfilled"
+                            "code": "Installation-Started"
                         }
                     },
                     "agent": {
@@ -159,17 +255,49 @@
             ],
             "quote": {
                 "price": {
-                    "value": "162750",
+                    "value": "83000",
                     "currency": "INR"
                 },
                 "breakup": [
                     {
-                        "title": "Base-Price",
-                        "item": {
-                            "id": "1"
-                        },
+                        "title": "Solar Panels",
                         "price": {
-                            "value": "150000",
+                            "value": "40000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Invertor",
+                        "price": {
+                            "value": "10000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Mounting Structure",
+                        "price": {
+                            "value": "8000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Wiring and Connectors",
+                        "price": {
+                            "value": "4000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "battery",
+                        "price": {
+                            "value": "15000",
+                            "currency": "INR"
+                        }
+                    },
+                    {
+                        "title": "Monitoring System",
+                        "price": {
+                            "value": "3000",
                             "currency": "INR"
                         }
                     },
@@ -179,20 +307,13 @@
                             "id": 1,
                             "add_ons": [
                                 {
-                                    "id": "2"
+                                    "id": "1"
                                 }
                             ]
                         },
                         "price": {
-                            "value": "5000",
+                            "value": "3000",
                             "currency": "INR"
-                        }
-                    },
-                    {
-                        "title": "GST",
-                        "price": {
-                            "currency": "INR",
-                            "value": "7750"
                         }
                     }
                 ]
@@ -205,12 +326,37 @@
             "payments": [
                 {
                     "collected_by": "bpp",
+                    "type": "PRE-ORDER",
+                    "status": "PAID",
+                    "params": {
+                        "amount": "250",
+                        "currency": "INR",
+                        "transaction_id": "t0123"
+                    },
+                    "tags": [
+                        {
+                            "descriptor": {
+                                "code": "Survey-Charge",
+                                "short_desc": "This amount will not be adjusted in the installation charge."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "collected_by": "bpp",
                     "type": "POST-FULFILLMENT",
                     "status": "NOT-PAID",
                     "params": {
-                        "amount": "162750",
+                        "amount": "83000",
                         "currency": "INR"
-                    }
+                    },
+                    "tags": [
+                        {
+                            "descriptor": {
+                                "code": "Installation-Charge"
+                            }
+                        }
+                    ]
                 }
             ]
         }
