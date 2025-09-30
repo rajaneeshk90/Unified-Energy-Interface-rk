@@ -18,7 +18,7 @@ Srilekha, a 29-year-old product manager driving from Bengaluru to Mysuru. She pl
 
 ## **API Calls and Schema**
 
-### **Search** {#search}
+### **Search**
 
 Consumer searches for EV charging stations with specific criteria including location, connector type, time window, finder fee etc.
 
@@ -137,7 +137,7 @@ This is like typing "EV charger" into Google Maps and saying "find me charging s
 * Message.intent.tags.list.[descriptor.code="type"].value: Tag to define if the commission is a percentage of the order value or a flat amount. Possible values are "PERCENTAGE" and "AMOUNT"  
 * Message.intent.tags.list.[descriptor.code="value"].value: Tag to define the buyer finder fee value.
 
-### **on_search** {#on_search}
+### **on_search**
 
 BPP returns a comprehensive catalog of available charging stations from multiple CPOs with detailed specifications, pricing, and location information.
 
@@ -605,7 +605,7 @@ This is the response you get back after searching - like getting a list of all n
 * category_ids: Links to program categories (e.g., "green-tariff" for eco-friendly options)  
 * location_ids: Links to specific charging station locations
 
-### **Select** {#select}
+### **Select** 
 
 The consumer can select an EV charging time slot from a specific charging station to get the real time availability and quote from the BPP.
 
@@ -739,7 +739,7 @@ BAP can also support EV charging by kWh. Below is an example of the same:
 }
 ```
 
-### **on_select** {#on_select}
+### **on_select**
 
 Here the BPP returns with the estimated quote for the service. If the service is unavailable, the BPP returns with an error.
 
@@ -943,7 +943,7 @@ Here the BPP returns with the estimated quote for the service. If the service is
   * price.currency: Currency of the individual charge in the breakup  
   * Breakup includes base charges, additional fees, surge pricing, and promotional discounts from applied offers
 
-### **init** {#init}
+### **init**
 
 This step is like filling out a hotel room booking form - you're telling the charging station "I want to charge here, here's my contact info and billing details." It's the first step in actually doing transacting.
 
@@ -1083,7 +1083,7 @@ This step is like filling out a hotel room booking form - you're telling the cha
 * message.order.billing.phone: Contact phone number for billing inquiries  
 * message.order.billing.tax_id: GST number for business billing and tax compliance
 
-### **on_init** {#on_init}
+### **on_init** 
 
 This is like getting a hotel room quote when you are booking a hotel room - "Your charging session will cost ₹100, here are the payment options." It's the charging station saying "I can accommodate your request, here are the terms and how to pay."
 
@@ -1661,7 +1661,7 @@ If authorization is required for confirming the order, the BPP will share messag
 
 In cases where **BPP is collecting payment** directly using a payment link and the payment terms dictate that the payment needs to be completed PRE-ORDER, once the payment completion event happens at the BPP's payment gateway, the BPP may send an unsolicited on_status call to the BAP with payment.status changed to PAID. Once the BAP receives the same they can trigger the confirm API with payment.status as PAID.
 
-### **confirm** {#confirm}
+### **confirm** 
 
 This is like clicking "Confirm Booking" on a hotel website after you've completed the payment. You're saying "Yes, I accept these terms and want to proceed with this charging session." The payment has already been processed (you can see the transaction ID in the message), and this is the final confirmation step before your charging session is officially booked.
 
@@ -1822,7 +1822,7 @@ This is like clicking "Confirm Booking" on a hotel website after you've complete
 * Message.order.payments.params.source_virtual_payment_address: Virtual payment address to which the collect request will be sent to  
 * message.order.payments.tags.list.descriptor.code: Selected payment method
 
-### **on_confirm** {#on_confirm}
+### **on_confirm** 
 
 This is like getting a hotel confirmation email - "Your booking is confirmed! Here's your reservation number." The charging station is saying "Great! Your charging session is booked and ready. Here's your order ID and all the details."
 

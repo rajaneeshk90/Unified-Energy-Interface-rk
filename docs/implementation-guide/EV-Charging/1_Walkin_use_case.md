@@ -173,7 +173,7 @@ Another possibility is that users discover the charging station through off-netw
 * The charging station must be able to handle direct selection requests without prior search/discovery  
 * This represents a more streamlined flow for walk-in customers who have already identified their preferred charging location
 
-### **on_search** {#on_search}
+### **on_search**
 
 BPP returns a comprehensive catalog of available charging stations from multiple CPOs with detailed specifications, pricing, and location information.
 
@@ -641,7 +641,7 @@ This is the response you get back after searching - like getting a list of all n
 * category_ids: Links to program categories (e.g., "green-tariff" for eco-friendly options)  
 * location_ids: Links to specific charging station locations
 
-### **select** {#select}
+### **select** 
 
 Once at the charging station, the user physically connects their EV to a charging slot. This action represents the initiation of the fulfillment process.
 
@@ -773,7 +773,7 @@ BAP can also support EV charging by kWh. Below is an example of the same:
 }
 ```
 
-### **on_select** {#on_select}
+### **on_select** 
 
 BPP confirms the selection and provides detailed pricing, terms, and next steps.
 
@@ -969,7 +969,7 @@ This is like getting a detailed quote from the restaurant - "Here's exactly what
 * message.order.quote.breakup[].title: Description of each cost component
 * message.order.quote.breakup[].price: Amount for each component
 
-### **init** {#init}
+### **init** 
 
 Consumer initiates the transaction by accepting the quote and providing payment details.
 
@@ -1103,7 +1103,7 @@ This is like clicking "Proceed to Payment" after reviewing your restaurant booki
 * message.order.billing.tax_id: GST number or other tax identifier
 * message.order.fulfillments.customer: Customer contact details for the charging session
 
-### **on_init** {#on_init}
+### **on_init**
 
 BPP confirms the initialization and provides payment details.
 
@@ -1669,7 +1669,7 @@ In cases where BPP is collecting payment directly using a payment link and the p
 * message.order.fulfillments.state.updated_at: Timestamp of last status update
 * message.order.fulfillments.state.updated_by: System that updated the status
 
-### **confirm** {#confirm}
+### **confirm**
 
 This is like clicking "Confirm Booking" on a hotel website after you've completed the payment. You're saying "Yes, I accept these terms and want to proceed with this charging session." The payment has already been processed (you can see the transaction ID in the message), and this is the final confirmation step before your charging session is officially booked.
 
@@ -1828,7 +1828,7 @@ This is like clicking "Confirm Booking" on a hotel website after you've complete
 * message.order.fulfillments.state.updated_at: Timestamp of last status update
 * message.order.fulfillments.state.updated_by: System that updated the status
 
-### **on_confirm** {#on_confirm}
+### **on_confirm** 
 
 This is like getting a hotel confirmation email - "Your booking is confirmed! Here's your reservation number." The charging station is saying "Great! Your charging session is booked and ready. Here's your order ID and all the details."
 
