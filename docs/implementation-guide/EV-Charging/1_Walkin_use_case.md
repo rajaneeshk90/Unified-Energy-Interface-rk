@@ -31,14 +31,139 @@ A 34-year-old sales manager who drives an EV to client meetings. He's time-bound
 
 ## **API Calls and Schema**
 
-Note: The API calls and schema for walk-in charging are identical to the advance reservation use case ([Use Case 2](./2_Reservation_use_case.md)) with minor differences in timing and availability. Where sections reference Use Case 2, the same API structure, field definitions, and examples apply unless specifically noted otherwise.
+> **Note on Discovery Methods**: 
+> 
+> In walk-in scenarios, discovery of charging stations MAY occur through various off-network channels including, but not limited to:
+> - Physical signage at the location
+> - Word-of-mouth recommendations
+> - Third-party mapping applications
+> - Other non-Beckn discovery mechanisms
+>
+> Network Participants (NPs) MAY choose to implement the discovery APIs described below to provide additional discovery capabilities. When implemented:
+> - BAPs MUST support the complete discovery flow as specified
+> - BPPs MUST respond with real-time availability and pricing information
+> - The discovery flow MUST maintain consistency with other booking flows
+>
+> The following sections detail the discovery APIs for implementations that choose to support them.
 
 ### **Search**
 
-Consumer searches for EV charging stations with specific criteria including location, connector type, and category filters.
+Consumer searches for EV charging stations with specific criteria including location, connector type, time window, finder fee etc.
 
-The search functionality works identically to the advance reservation use case described in [Use Case 2](./2_Reservation_use_case.md#search). Please refer to that section for detailed API specifications and examples.
+This is like typing "EV charger" into Google Maps and saying "find me charging stations within 5km of this location that have CCS2 connectors." The app sends this request to find available charging stations that match your criteria.
 
+```json
+{
+  "context": {
+    "ttl": "PT10M",
+    "action": "search",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "timestamp": "2024-08-05T09:21:12.618Z",
+    "message_id": "e138f204-ec0b-415d-9c9a-7b5bafe10bfe",
+    "transaction_id": "2ad735b9-e190-457f-98e5-9702fd895996",
+    "domain": "deg:ev-charging",
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1"
+  },
+  "message": {
+    "intent": {
+      "descriptor": {
+        "name": "EV charger"
+      },
+      "item": {
+        "descriptor": {
+          "code": "CHARGER"
+        }
+      },
+      "fulfillment": {
+        "type": "CHARGING",
+        "stops": [
+          {
+            "location": {
+              "circle": {
+                "gps": "12.423423,77.325647",
+                "radius": {
+                  "value": "5",
+                  "unit": "km"
+                }
+              }
+            },
+            "type": "START-CHARGING",
+            "time": {
+              "range": {
+                  "start": "2025:09:24:10:00:00",
+                  "end": "2025:09:24:16:00:00"
+              }
+            }
+          }
+        ],
+        "tags": [
+          {
+            "list": [
+              {
+                "descriptor": {
+                  "code": "connector-type"
+                },
+                "value": "CCS2"
+              }
+            ]
+          }
+        ]
+      },
+     "tags": [
+        {
+          "descriptor": {
+            "code": "buyer-finder-fee"
+          },
+          "list": [
+            {
+              "descriptor": {
+                "code": "type"
+              },
+              "value": "PERCENTAGE"
+            },
+            {
+              "descriptor": {
+                "code": "value"
+              },
+              "value": "2"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+**Search Criteria:**
+* message.intent.descriptor.name: Free text search for charging stations (user can enter any search terms like "EV charger", "fast charging", etc.)  
+* message.intent.category.descriptor.code: Category-based search filter (e.g., "green-tariff" for eco-friendly charging options)
+
+**Location and Timing:**
+* message.intent.fulfillment.stops[].location.circle.gps: GPS coordinates for search center (REQUIRED - format: "latitude,longitude")  
+* message.intent.fulfillment.stops[].location.circle.radius.value: Search radius value (REQUIRED - e.g., "5")  
+* message.intent.fulfillment.stops[].location.circle.radius.unit: Unit of measurement (REQUIRED - e.g., "km", "miles")  
+* message.intent.fulfillment.stops[].time.range.start: Earliest acceptable charging start time (OPTIONAL - format: "YYYY:MM:DD:HH:MM:SS")  
+* message.intent.fulfillment.stops[].time.range.end: Latest acceptable charging end time (OPTIONAL - format: "YYYY:MM:DD:HH:MM:SS")
+
+**Connector Type Filtering:**
+* message.intent.fulfillment.tags.list.descriptor.code: Connector type filter code (e.g., "connector-type")  
+* message.intent.fulfillment.tags.list.value: Specific connector type value (e.g., "CCS2", "CHAdeMO", "Type 2")  
+* Used by BPP to filter charging stations that match vehicle requirements
+
+**Buyer Finder Fee Declaration:**
+* message.intent.tags.descriptor.code: Tag group to describe the buyer finder fee or the commission amount for the BAP as part of the transaction.  
+* Message.intent.tags.list.[descriptor.code="type"].value: Tag to define if the commission is a percentage of the order value or a flat amount. Possible values are "PERCENTAGE" and "AMOUNT"  
+* Message.intent.tags.list.[descriptor.code="value"].value: Tag to define the buyer finder fee value.
 **Alternative Discovery Scenario:**
 
 Another possibility is that users discover the charging station through off-network channels (such as physical signage, word-of-mouth, or third-party apps not integrated with Beckn) and arrive directly at the location to initiate charging. In this scenario:
@@ -48,55 +173,1941 @@ Another possibility is that users discover the charging station through off-netw
 * The charging station must be able to handle direct selection requests without prior search/discovery  
 * This represents a more streamlined flow for walk-in customers who have already identified their preferred charging location
 
-### **on_search**
+### **on_search** {#on_search}
 
-The on_search response structure and content are identical to the advance reservation use case. Please refer to the [on_search section](./2_Reservation_use_case.md#on_search) in Use Case 2 for detailed response schema, field descriptions, and examples.
+BPP returns a comprehensive catalog of available charging stations from multiple CPOs with detailed specifications, pricing, and location information.
 
-**Key difference for walk-in scenario:** The availability time slots in fulfillments.stops[].time.range will show immediate availability (current time onwards) rather than future scheduled slots.
+1. Multiple providers (CPOs) with their charging networks  
+2. Detailed location information with GPS coordinates  
+3. Individual charging station specifications and pricing  
+4. Connector types, power ratings, and availability status
 
-### **Select**
+This is the response you get back after searching - like getting a list of all nearby restaurants from Google Maps. It shows you all the charging stations available, their locations, prices, and what type of connectors they have. Think of it as a "charging station directory" for your area.
 
-The select functionality works identically to the advance reservation use case. Please refer to the [Select section](./2_Reservation_use_case.md#select) in Use Case 2 for detailed API specifications, request structure, and examples.
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_search",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z"
+  },
+  "message": {
+    "catalog": {
+      "providers": [
+        {
+          "id": "cpo1.com",
+          "descriptor": {
+            "name": "CPO1 EV charging Company",
+            "short_desc": "CPO1 provides EV charging facility across India",
+            "images": [
+              {
+                "url": "https://cpo1.com/images/logo.png"
+              }
+            ]
+          },
+          "locations": [
+            {
+              "id": "LOC-DELHI-001",
+              "gps": "28.345345,77.389754",
+              "descriptor": {
+                "name": "BlueCharge Connaught Place Station"
+              },
+              "address": "Connaught Place, New Delhi"
+            }
+          ],
+          "fulfillments": [
+            {
+              "id": "fulfillment-001",
+              "type": "CHARGING",
+              "stops": [
+                {
+                  "location": {
+                    "gps": "28.6304,77.2177",
+                    "address": "Connaught Place, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:10:00:00",
+                      "end": "2025:09:24:11:00:00"
+                    }
+                  }
+                },
+                {
+                  "location": {
+                    "gps": "28.6304,77.2177",
+                    "address": "Connaught Place, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:12:00:00",
+                      "end": "2025:09:24:13:00:00"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "fulfillment-002",
+              "type": "CHARGING",
+              "stops": [
+                {
+                  "location": {
+                    "gps": "28.6310,77.2200",
+                    "address": "Saket, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:11:00:00",
+                      "end": "2025:09:24:12:00:00"
+                    }
+                  }
+                },
+                {
+                  "location": {
+                    "gps": "28.6310,77.2200",
+                    "address": "Saket, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:15:00:00",
+                      "end": "2025:09:24:16:00:00"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "items": [
+            {
+              "id": "pe-charging-01",
+              "descriptor": {
+                "name": "EV Charger #1 (AC Fast Charger)",
+                "code": "CHARGER"
+              },
+              "price": {
+                "value": "18",
+                "currency": "INR/kWh"
+              },
+              "fulfillment_ids": [
+                "fulfillment-001"
+              ],
+              "location_ids": [
+                "LOC-DELHI-001"
+              ],
+              "tags": [
+                {
+                  "descriptor": {
+                    "code": "connector-specifications",
+                    "name": "Connector Specifications"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "name": "connector Id",
+                        "code": "connector-id"
+                      },
+                      "value": "1"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Type",
+                        "code": "power-type"
+                      },
+                      "value": "AC_3_PHASE"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Type",
+                        "code": "connector-type"
+                      },
+                      "value": "CCS2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Format",
+                        "code": "connector-format"
+                      },
+                      "value": "SOCKET"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Charging Speed",
+                        "code": "charging-speed"
+                      },
+                      "value": "FAST"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Rating",
+                        "code": "power-rating"
+                      },
+                      "value": "30kW"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Status",
+                        "code": "status"
+                      },
+                      "value": "Available"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "pe-charging-02",
+              "descriptor": {
+                "name": "EV Charger #1 (AC Fast Charger)",
+                "code": "CHARGER",
+                "short_desc": "Spot Booking"
+              },
+              "price": {
+                "value": "21",
+                "currency": "INR/kWh"
+              },
+              "fulfillment_ids": [
+                "fulfillment-001"
+              ],
+              "location_ids": [
+                "LOC-DELHI-001"
+              ],
+              "tags": [
+                {
+                  "descriptor": {
+                    "code": "connector-specifications",
+                    "name": "Connector Specifications"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "name": "connector Id",
+                        "code": "connector-id"
+                      },
+                      "value": "1"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Type",
+                        "code": "power-type"
+                      },
+                      "value": "AC_3_PHASE"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Type",
+                        "code": "connector-type"
+                      },
+                      "value": "CCS2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Format",
+                        "code": "connector-format"
+                      },
+                      "value": "SOCKET"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Charging Speed",
+                        "code": "charging-speed"
+                      },
+                      "value": "FAST"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Rating",
+                        "code": "power-rating"
+                      },
+                      "value": "30kW"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Status",
+                        "code": "status"
+                      },
+                      "value": "Available"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "pe-charging-02",
+              "descriptor": {
+                "name": "EV Charger #2 (DC Fast Charger)",
+                "code": "CHARGER"
+              },
+              "price": {
+                "value": "25",
+                "currency": "INR/kWh"
+              },
+              "fulfillment_ids": [
+                "fulfillment-002"
+              ],
+              "location_ids": [
+                "LOC-DELHI-002"
+              ],
+              "tags": [
+                {
+                  "descriptor": {
+                    "name": "Connector Specifications"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "name": "connector ID",
+                        "code": "connector-id"
+                      },
+                      "value": "2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Type",
+                        "code": "power-type"
+                      },
+                      "value": "DC"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Type",
+                        "code": "connector-type"
+                      },
+                      "value": "CCS2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Format",
+                        "code": "connector-format"
+                      },
+                      "value": "CABLE"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Charging Speed",
+                        "code": "charging-speed"
+                      },
+                      "value": "FAST"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Rating",
+                        "code": "power-rating"
+                      },
+                      "value": "40kW"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Status",
+                        "code": "status"
+                      },
+                      "value": "Available"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "pe-charging-02",
+              "descriptor": {
+                "name": "EV Charger #2 (DC Fast Charger)",
+                "code": "CHARGER",
+                "short_desc": "Spot Booking"
+              },
+              "price": {
+                "value": "28",
+                "currency": "INR/kWh"
+              },
+              "fulfillment_ids": [
+                "fulfillment-002"
+              ],
+              "location_ids": [
+                "LOC-DELHI-002"
+              ],
+              "tags": [
+                {
+                  "descriptor": {
+                    "name": "Connector Specifications"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "name": "connector ID",
+                        "code": "connector-id"
+                      },
+                      "value": "2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Type",
+                        "code": "power-type"
+                      },
+                      "value": "DC"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Type",
+                        "code": "connector-type"
+                      },
+                      "value": "CCS2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Format",
+                        "code": "connector-format"
+                      },
+                      "value": "CABLE"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Charging Speed",
+                        "code": "charging-speed"
+                      },
+                      "value": "FAST"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Rating",
+                        "code": "power-rating"
+                      },
+                      "value": "40kW"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Status",
+                        "code": "status"
+                      },
+                      "value": "Available"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
 
-**Key difference for walk-in scenario:** The selected time slots will be for immediate charging rather than future scheduled slots.
+**Provider Information:**
+* message.catalog.providers.id: Unique identifier for the charging network provider (CPO)  
+* message.catalog.providers.descriptor.name: Display name of the charging network (e.g., "CPO1 EV charging Company")  
+* message.catalog.providers.descriptor.short_desc: Brief description of provider's services and coverage area
 
-### **on_select**
+**Location Details:**
+* message.catalog.providers.locations.id: Unique location identifier for the charging station  
+* message.catalog.providers.locations.gps: GPS coordinates of the charging station (format: "latitude,longitude")  
+* message.catalog.providers.locations.descriptor.name: Human-readable name of the charging station  
+* message.catalog.providers.locations.address: Full address of the charging station
 
-The on_select response structure and pricing logic are identical to the advance reservation use case. Please refer to the [on_select section](./2_Reservation_use_case.md#on_select) in Use Case 2 for detailed response schema, quote breakup, and field descriptions.
+**Availability Time Slots:**
+* message.catalog.providers.fulfillments.stops[].time.range.start: Start time of available charging slot (format: "YYYY:MM:DD:HH:MM:SS")  
+* message.catalog.providers.fulfillments.stops[].time.range.end: End time of available charging slot (format: "YYYY:MM:DD:HH:MM:SS")  
+* Multiple stops entries represent different available time slots for the same charger location  
+* Each time slot indicates when the charging station is available for booking or immediate use
 
-### **init**
+**Charging Station Specifications (Items):**
+* message.catalog.providers.items.id: Unique identifier for the specific charging point/EVSE  
+* message.catalog.providers.items.descriptor.name: Human-readable name of the charging point  
+* message.catalog.providers.items.price.value: Charging rate per unit (e.g., "18" for ₹18/kWh)  
+* message.catalog.providers.items.price.currency: Currency and unit basis (e.g., "INR/kWh")
 
-The init functionality works identically to the advance reservation use case. Please refer to the [init section](./2_Reservation_use_case.md#init) in Use Case 2 for detailed API specifications, request structure, and examples.
+**Technical Specifications (Tags):**
+* connector-id: Physical connector identifier at the charging station  
+* power-type: Type of power delivery (e.g., "AC_3_PHASE", "DC")  
+* connector-type: Connector standard (e.g., "CCS2", "CHAdeMO", "Type 2")  
+* charging-speed: Relative charging speed classification (e.g., "FAST", "SLOW")  
+* power-rating: Maximum power output in kilowatts (e.g., "30kW", "40kW")  
+* status: Current availability status (e.g., "Available", "In Use", "Maintenance")
 
-**Key difference for walk-in scenario:** The init process happens immediately at the charging location rather than in advance.
+**Fulfillment and Category Links:**
+* fulfillment_ids: Links to fulfillment options (charging service delivery methods)  
+* category_ids: Links to program categories (e.g., "green-tariff" for eco-friendly options)  
+* location_ids: Links to specific charging station locations
 
-### **on_init**
+### **select** {#select}
 
-The on_init response structure and payment options are identical to the advance reservation use case. Please refer to the [on_init section](./2_Reservation_use_case.md#on_init) in Use Case 2 for detailed response schema, payment methods, and field descriptions.
+Once at the charging station, the user physically connects their EV to a charging slot. This action represents the initiation of the fulfillment process.
 
-### **confirm**
+The fulfillment start time attribute SHALL be set to the current timestamp, indicating immediate commencement of the charging session. The fulfillment end time attribute SHALL be determined based on the user’s specified requirement, such as desired energy intake, duration, or departure time.
 
-The confirm functionality works identically to the advance reservation use case. Please refer to the [confirm section](./2_Reservation_use_case.md#confirm) in Use Case 2 for detailed API specifications, payment confirmation, and examples.
+This is like clicking on a specific restaurant from the Google Maps results - you're saying "I want to book this particular charging station with this specific connector type."
 
-**Key difference for walk-in scenario:** The confirmation happens immediately at the location rather than for a future scheduled session.
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "select",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2025:09:24:10:00:00",
+    "ttl": "15S"
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": "cpo1.com"
+      },
+      "items": [
+        {
+          "id": "pe-charging-01",
+	    "quantity": {
+            "selected": {
+              "measure": {
+                "type": "CONSTANT",
+                "value": "100",
+                "unit": "INR"
+              }
+            }
+          }
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "1",
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2025:09:24:10:00:00"
+              }
+            },
+            {
+              "type": "STOP",
+              "time": {
+                "timestamp": "2025:09:24:11:00:00"
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "descriptor": {
+            "code": "buyer-finder-fee"
+          },
+          "list": [
+            {
+              "descriptor": {
+                "code": "type"
+              },
+              "value": "PERCENTAGE"
+            },
+            {
+              "descriptor": {
+                "code": "value"
+              },
+              "value": "2"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
 
-### **on_confirm**
+**Selection Details:**
+* message.order.provider.id: Selected charging network provider ID
+* message.order.items.id: Selected charging station/connector ID
+* message.order.items.quantity.selected.measure.value: Desired charging duration
+* message.order.items.quantity.selected.measure.unit: Time unit (e.g., "MINUTES", "HOURS")
+* message.order.fulfillments.stops.time.range: Preferred charging time window
 
-The on_confirm response structure and order confirmation details are identical to the advance reservation use case. Please refer to the [on_confirm section](./2_Reservation_use_case.md#on_confirm) in Use Case 2 for detailed response schema, order status, and field descriptions.
+BAP can also support EV charging by kWh. Below is an example of the same:
 
-### **update (start charging)**
+```json
+{
+    "context": {
+       "action": "select"
+    },
+    "message": {
+      "order": {
+        "item": {
+           "id": "pe-charging-01",
+            "quantity": {
+              "selected": {
+                "measure": {
+                   "type": "CONSTANT",
+                   "value": "2.5",
+                   "unit": "kWh"
+                }
+             }
+           }
+       }
+    }
+  }
+}
+```
 
-Physical Charging Process:
+### **on_select** {#on_select}
+
+BPP confirms the selection and provides detailed pricing, terms, and next steps.
+
+This is like getting a detailed quote from the restaurant - "Here's exactly what you'll get, how much it costs, and what happens next."
+
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_select",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": "cpo1.com",
+        "descriptor": {
+          "name": "CPO1 EV charging Company",
+          "short_desc": "CPO1 provides EV charging facility across India",
+          "images": [
+            {
+              "url": "https://cpo1.com/images/logo.png"
+            }
+          ]
+        }
+      },
+      "items": [
+        {
+          "id": "pe-charging-01",
+          "descriptor": {
+            "name": "EV Charger #1 (AC Fast Charger)",
+            "code": "ev-charger"
+            "short_desc": "Book now"
+          },
+          "price": {
+            "value": "18",
+            "currency": "INR/kWh"
+          },
+	        "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
+              }
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "connector-specifications",
+                "name": "Connector Specifications"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "name": "connector Id",
+                    "code": "connector-id"
+                  },
+                  "value": "1"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Type",
+                    "code": "power-type"
+                  },
+                  "value": "AC_3_PHASE"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Type",
+                    "code": "connector-type"
+                  },
+                  "value": "CCS2"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Format",
+                    "code": "connector-format"
+                  },
+                  "value": "SOCKET"
+                },
+                {
+                  "descriptor": {
+                    "name": "Charging Speed",
+                    "code": "charging-speed"
+                  },
+                  "value": "FAST"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Rating",
+                    "code": "power-rating"
+                  },
+                  "value": "30kW"
+                },
+                {
+                  "descriptor": {
+                    "name": "Status",
+                    "code": "status"
+                  },
+                  "value": "Available"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "fulfillment-001",
+          "type": "CHARGING",
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2025:09:24:10:00:00"
+              },
+              "location": {
+                "gps": "28.345345,77.389754",
+                "descriptor": {
+                  "name": "BlueCharge Connaught Place Station"
+                },
+                "address": "Connaught Place, New Delhi"
+              },
+              "instructions": {
+                "short_desc": "Ground floor, Pillar Number 4"
+              }
+            },
+            {
+              "type": "STOP",
+              "time": {
+                "timestamp": "2025:09:24:11:00:00"
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          }
+        }
+      ],
+      "quote": {
+        "price": {
+          "value": "100",
+          "currency": "INR"
+        },
+        "breakup": [
+          {
+            "title": "Charging session cost (5 kWh @ ₹18.00/kWh)",
+            "item": {
+              "id": "pe-charging-01"
+            },
+            "price": {
+              "value": "90",
+              "currency": "INR"
+            }
+          },
+          {
+            "title": "service fee",
+            "price": {
+              "currency": "INR",
+              "value": "10"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+**Quote Details:**
+* message.order.quote.price.value: Total estimated cost
+* message.order.quote.price.currency: Currency for the transaction
+* message.order.quote.breakup: Itemized breakdown of costs
+* message.order.quote.breakup[].title: Description of each cost component
+* message.order.quote.breakup[].price: Amount for each component
+
+### **init** {#init}
+
+Consumer initiates the transaction by accepting the quote and providing payment details.
+
+This is like clicking "Proceed to Payment" after reviewing your restaurant booking details. You're saying "I agree to these terms and prices, let's move forward with payment."
+
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "init",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": "cpo1.com"
+      },
+      "items": [
+        {
+          "id": "pe-charging-01",
+		      "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
+              }
+          },
+        }
+      ],
+      "billing": {
+        "name": "Ravi Kumar",
+        "organization": {
+          "descriptor": {
+            "name": "GreenCharge Pvt Ltd"
+          }
+        },
+        "address": "Apartment 123, MG Road, Bengaluru, Karnataka, 560001, India",
+        "state": {
+          "name": "Karnataka"
+        },
+        "city": {
+          "name": "Bengaluru"
+        },
+        "email": "ravi.kumar@greencharge.com",
+        "phone": "+918765432100",
+        "time": {
+          "timestamp": "2025-07-30T12:02:00Z"
+        },
+        "tax_id": "GSTIN29ABCDE1234F1Z5"
+      },
+      "fulfillments": [
+        {
+          "id": "1",
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2025-09-16T10:00:00+05:30"
+              }
+            },
+            {
+              "type": "STOP",
+              "time": {
+                "timestamp": "2025-09-16T11:30:00+05:30"
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          },
+          "customer": {
+            "person": {
+              "name": "Ravi Kumar"
+            },
+            "contact": {
+              "phone": "+91-9887766554"
+            }
+          }
+        }
+      ],
+      "tags": [
+        {
+          "descriptor": {
+            "code": "buyer-finder-fee"
+          },
+          "list": [
+            {
+              "descriptor": {
+                "code": "type"
+              },
+              "value": "PERCENTAGE"
+            },
+            {
+              "descriptor": {
+                "code": "value"
+              },
+              "value": "10"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+**Initialization Details:**
+* message.order.billing: Customer billing information
+* message.order.billing.name: Customer's full name
+* message.order.billing.organization: Business details if applicable
+* message.order.billing.address: Complete billing address
+* message.order.billing.tax_id: GST number or other tax identifier
+* message.order.fulfillments.customer: Customer contact details for the charging session
+
+### **on_init** {#on_init}
+
+BPP confirms the initialization and provides payment details.
+
+This is like getting the final payment screen with all the payment options and instructions. The charging station is saying "Great! Here's how you can pay for your charging session."
+
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_init",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": "cpo1.com",
+        "descriptor": {
+          "name": "CPO1 EV charging Company",
+          "short_desc": "CPO1 provides EV charging facility across India",
+          "images": [
+            {
+              "url": "https://cpo1.com/images/logo.png"
+            }
+          ]
+        }
+      },
+      "items": [
+        {
+          "id": "pe-charging-01",
+          "descriptor": {
+            "name": "EV Charger #1 (AC Fast Charger)",
+            "code": "ev-charger"
+          },
+          "price": {
+            "value": "18",
+            "currency": "INR/kWh"
+          },
+	        "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
+              }
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "connector-specifications",
+                "name": "Connector Specifications"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "name": "connector Id",
+                    "code": "connector-id"
+                  },
+                  "value": "1"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Type",
+                    "code": "power-type"
+                  },
+                  "value": "AC_3_PHASE"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Type",
+                    "code": "connector-type"
+                  },
+                  "value": "CCS2"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Format",
+                    "code": "connector-format"
+                  },
+                  "value": "SOCKET"
+                },
+                {
+                  "descriptor": {
+                    "name": "Charging Speed",
+                    "code": "charging-speed"
+                  },
+                  "value": "FAST"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Rating",
+                    "code": "power-rating"
+                  },
+                  "value": "30kW"
+                },
+                {
+                  "descriptor": {
+                    "name": "Status",
+                    "code": "status"
+                  },
+                  "value": "Available"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "fulfillment-001",
+          "type": "CHARGING",
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2023-07-16T10:00:00+05:30"
+              },
+              "location": {
+                "gps": "28.345345,77.389754",
+                "descriptor": {
+                  "name": "BlueCharge Connaught Place Station"
+                },
+                "address": "Connaught Place, New Delhi"
+              },
+              "instructions": {
+                "short_desc": "OTP will be shared to the user's registered number to confirm order"
+              }
+              "authorization": {
+                "type": "OTP"
+              },
+            },
+            {
+              "type": "STOP",
+              "time": {
+                "timestamp": "2025:09:24:11:00:00"
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          },
+          "customer": {
+            "person": {
+              "name": "Ravi Kumar"
+            },
+            "contact": {
+              "phone": "+91-9887766554"
+            }
+          }
+        }
+      ],
+      "quote": {
+        "price": {
+          "value": "100",
+          "currency": "INR"
+        },
+        "breakup": [
+          {
+            "title": "Charging session cost (5 kWh @ ₹18.00/kWh)",
+            "item": {
+              "id": "pe-charging-01"
+            },
+            "price": {
+              "value": "90",
+              "currency": "INR"
+            }
+          },
+          {
+            "title": "Service fee",
+            "price": {
+              "currency": "INR",
+              "value": "10"
+            }
+          }
+        ]
+      },
+      "billing": {
+        "name": "Ravi Kumar",
+        "organization": {
+          "descriptor": {
+            "name": "GreenCharge Pvt Ltd"
+          }
+        },
+        "address": "Apartment 123, MG Road, Bengaluru, Karnataka, 560001, India",
+        "state": {
+          "name": "Karnataka"
+        },
+        "city": {
+          "name": "Bengaluru"
+        },
+        "email": "ravi.kumar@greencharge.com",
+        "phone": "+918765432100",
+        "time": {
+          "timestamp": "2025-07-30T12:02:00Z"
+        },
+        "tax_id": "GSTIN29ABCDE1234F1Z5"
+      },
+      "payments": [
+        {
+          "id": "payment-123e4567-e89b-12d3-a456-426614174000",
+          "collected_by": "BPP",
+          "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
+          "params": {
+            "amount": "100.00",
+            "currency": "INR",
+            "bank_code": "HDFC000123",
+            "bank_account_number": "1131324242424"
+          },
+          "type": "PRE-FULFILLMENT",
+          "status": "NOT-PAID",
+          "time": {
+            "timestamp": "2025-07-30T14:59:00Z"
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "payment-methods"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "code": "BANK-TRANSFER",
+                    "short_desc": "Pay by transferring to a bank account"
+                  }
+                },
+                {
+                  "descriptor": {
+                    "code": "PAYMENT-LINK",
+                    "short_desc": "Pay through a bank link received"
+                  }
+                },
+                {
+                  "descriptor": {
+                    "code": "UPI-TRANSFER",
+                    "short_desc": "Pay by setting a UPI mandate"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "refund_terms": [
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Order Confirmed",
+              "code": "CONFIRMED",
+              "long_desc": "85% refund available if cancelled at least 4 hours before the scheduled charging time"
+            }
+          },
+          "refund_eligible": true,
+          "refund_within": {
+            "duration": "PT2H"
+          },
+          "refund_amount": {
+            "currency": "INR",
+            "value": "85"
+          }
+        },
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Charging Active",
+              "code": "ACTIVE"
+            }
+          },
+          "refund_eligible": false
+        }
+      ]
+    }
+  }
+}
+```
+
+**Payment Details:**
+* message.order.payments[].collected_by: Entity collecting the payment (BPP/BAP)
+* message.order.payments[].params.transaction_id: Unique payment transaction identifier
+* message.order.payments[].params.amount: Amount to be paid
+* message.order.payments[].status: Current payment status
+* message.order.payments[].type: When payment is collected (pre/post fulfillment)
+* message.order.payments[].url: Payment gateway URL
+
+
+In cases where BPP is collecting payment directly using a payment link and the payment terms dictate that the payment needs to be completed PRE-ORDER, once the payment completion event happens at the BPP’s payment gateway, the BPP may send an unsolicited on_status call to the BAP with payment.status changed to PAID. Once the BAP receives the same they can trigger the confirm API with payment.status as PAID.
+
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_status",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": "cpo1.com",
+        "descriptor": {
+          "name": "CPO1 EV charging Company",
+          "short_desc": "CPO1 provides EV charging facility across India",
+          "images": [
+            {
+              "url": "https://cpo1.com/images/logo.png"
+            }
+          ]
+        }
+      },
+      "items": [
+        {
+          "id": "pe-charging-01",
+          "descriptor": {
+            "name": "EV Charger #1 (AC Fast Charger)",
+            "code": "ev-charger"
+          },
+          "price": {
+            "value": "18",
+            "currency": "INR/kWh"
+          },
+		      "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
+              }
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "connector-specifications",
+                "name": "Connector Specifications"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "name": "connector Id",
+                    "code": "connector-id"
+                  },
+                  "value": "1"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Type",
+                    "code": "power-type"
+                  },
+                  "value": "AC_3_PHASE"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Type",
+                    "code": "connector-type"
+                  },
+                  "value": "CCS2"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Format",
+                    "code": "connector-format"
+                  },
+                  "value": "SOCKET"
+                },
+                {
+                  "descriptor": {
+                    "name": "Charging Speed",
+                    "code": "charging-speed"
+                  },
+                  "value": "FAST"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Rating",
+                    "code": "power-rating"
+                  },
+                  "value": "30kW"
+                },
+                {
+                  "descriptor": {
+                    "name": "Status",
+                    "code": "status"
+                  },
+                  "value": "Available"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "fulfillment-001",
+          "type": "CHARGING",
+          "state": {
+            "descriptor": {
+              "code": "PENDING",
+              "name": "Charging Pending"
+            },
+            "updated_at": "2025-07-30T12:06:02Z",
+            "updated_by": "bluechargenet-aggregator.io"
+          },
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2023-07-16T10:00:00+05:30"
+              },
+              "location": {
+                "gps": "28.345345,77.389754",
+                "descriptor": {
+                  "name": "BlueCharge Connaught Place Station"
+                },
+                "address": "Connaught Place, New Delhi"
+              },
+              "instructions": {
+                "short_desc": "Ground floor, Pillar Number 4"
+              }
+            },
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2025-07-16T11:00:00+05:30"
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          },
+        }
+      ],
+      "quote": {
+        "price": {
+          "value": "100",
+          "currency": "INR"
+        },
+        "breakup": [
+          {
+            "title": "Charging session cost (5 kWh @ ₹18.00/kWh)",
+            "item": {
+              "id": "pe-charging-01"
+            },
+            "price": {
+              "value": "90",
+              "currency": "INR"
+            }
+          },
+          {
+            "title": "Service Fee",
+            "price": {
+              "currency": "INR",
+              "value": "10"
+            }
+          }
+        ]
+      },
+      "billing": {
+        "name": "Ravi Kumar",
+        "organization": {
+          "descriptor": {
+            "name": "GreenCharge Pvt Ltd"
+          }
+        },
+        "address": "Apartment 123, MG Road, Bengaluru, Karnataka, 560001, India",
+        "state": {
+          "name": "Karnataka"
+        },
+        "city": {
+          "name": "Bengaluru"
+        },
+        "email": "ravi.kumar@greencharge.com",
+        "phone": "+918765432100",
+        "time": {
+          "timestamp": "2025-07-30T12:02:00Z"
+        },
+        "tax_id": "GSTIN29ABCDE1234F1Z5"
+      },
+      "payments": [
+        {
+          "id": "payment-123e4567-e89b-12d3-a456-426614174000",
+          "collected_by": "BPP",
+          "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
+          "params": {
+            "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+            "amount": "100.00",
+            "currency": "INR"
+          },
+          "type": "ON-ORDER",
+          "status": "PAID",
+          "time": {
+            "timestamp": "2025-07-30T14:59:00Z"
+          }
+        }
+      ],
+      "refund_terms": [
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Order Confirmed",
+              "code": "CONFIRMED",
+              "long_desc": "85% refund available if cancelled at least 4 hours before the scheduled charging time"
+            }
+          },
+          "refund_eligible": true,
+          "refund_within": {
+            "duration": "PT2H"
+          },
+          "refund_amount": {
+            "currency": "INR",
+            "value": "85"
+          }
+        },
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Charging active",
+              "code": "ACTIVE"
+            }
+          },
+          "refund_eligible": false
+        }
+      ]
+    }
+  }
+}
+```
+
+**Order Status:**
+* message.order.id: Unique order identifier assigned by the BPP
+* message.order.fulfillments.state.descriptor.code: Current order status (e.g., "PENDING")
+* message.order.fulfillments.state.updated_at: Timestamp of last status update
+* message.order.fulfillments.state.updated_by: System that updated the status
+
+### **confirm** {#confirm}
+
+This is like clicking "Confirm Booking" on a hotel website after you've completed the payment. You're saying "Yes, I accept these terms and want to proceed with this charging session." The payment has already been processed (you can see the transaction ID in the message), and this is the final confirmation step before your charging session is officially booked.
+
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "confirm",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": "cpo1.com"
+      },
+      "items": [
+        {
+          "id": "pe-charging-01",
+		      "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
+              }
+          }
+        }
+      ],
+      "billing": {
+        "name": "Ravi Kumar",
+        "organization": {
+          "descriptor": {
+            "name": "GreenCharge Pvt Ltd"
+          }
+        },
+        "address": "Apartment 123, MG Road, Bengaluru, Karnataka, 560001, India",
+        "state": {
+          "name": "Karnataka"
+        },
+        "city": {
+          "name": "Bengaluru"
+        },
+        "email": "ravi.kumar@greencharge.com",
+        "phone": "+918765432100",
+        "time": {
+          "timestamp": "2025-07-30T12:02:00Z"
+        },
+        "tax_id": "GSTIN29ABCDE1234F1Z5"
+      },
+      "fulfillments": [
+        {
+          "id": "fulfillment-001",
+          "stops": [
+            {
+              "type": "START",
+              "authorization": {
+                "type": "OTP",
+                "token": "2442"
+              },
+              "time": {
+                "timestamp": "2023-07-16T10:00:00+05:30"
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          },
+          "customer": {
+            "person": {
+              "name": "Ravi kumar"
+            },
+            "contact": {
+              "phone": "+91-9887766554"
+            }
+          }
+        }
+      ],
+      "payments": [
+        {
+          "id": "payment-123e4567-e89b-12d3-a456-426614174000",
+          "collected_by": "BPP",
+          "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
+          "params": {
+            "amount": "100.00",
+            "currency": "INR",
+            "source_virtual_payment_address": "ravi@ptsbi"
+          },
+          "type": "PRE-FULFILLMENT",
+          "status": "NOT-PAID",
+          "time": {
+            "timestamp": "2025-07-30T14:59:00Z"
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "Payment-methods"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "code": "UPI-TRANFER"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tags": [d
+        {
+          "descriptor": {
+            "code": "buyer-finder-fee"
+          },
+          "list": [
+            {
+              "descriptor": {
+                "code": "type"
+              },
+              "value": "PERCENTAGE"
+            },
+            {
+              "descriptor": {
+                "code": "value"
+              },
+              "value": "2"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+**Order Status:**
+* message.order.id: Unique order identifier assigned by the BPP
+* message.order.fulfillments.state.descriptor.code: Current order status (e.g., "PENDING")
+* message.order.fulfillments.state.updated_at: Timestamp of last status update
+* message.order.fulfillments.state.updated_by: System that updated the status
+
+### **on_confirm** {#on_confirm}
+
+This is like getting a hotel confirmation email - "Your booking is confirmed! Here's your reservation number." The charging station is saying "Great! Your charging session is booked and ready. Here's your order ID and all the details."
+
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_confirm",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
+  },
+  "message": {
+    "order": {
+      "id": "6743e9e2-4fb5-487c-92b7",
+      "provider": {
+        "id": "cpo1.com",
+        "descriptor": {
+          "name": "CPO1 EV charging Company",
+          "short_desc": "CPO1 provides EV charging facility across India",
+          "images": [
+            {
+              "url": "https://cpo1.com/images/logo.png"
+            }
+          ]
+        }
+      },
+      "items": [
+        {
+          "id": "pe-charging-01",
+          "descriptor": {
+            "name": "EV Charger #1 (AC Fast Charger)",
+            "code": "ev-charger"
+          },
+          "price": {
+            "value": "18",
+            "currency": "INR/kWh"
+          },
+		      "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
+              }
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "connector-specifications",
+                "name": "Connector Specifications"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "name": "connector Id",
+                    "code": "connector-id"
+                  },
+                  "value": "1"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Type",
+                    "code": "power-type"
+                  },
+                  "value": "AC_3_PHASE"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Type",
+                    "code": "connector-type"
+                  },
+                  "value": "CCS2"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Format",
+                    "code": "connector-format"
+                  },
+                  "value": "SOCKET"
+                },
+                {
+                  "descriptor": {
+                    "name": "Charging Speed",
+                    "code": "charging-speed"
+                  },
+                  "value": "FAST"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Rating",
+                    "code": "power-rating"
+                  },
+                  "value": "30kW"
+                },
+                {
+                  "descriptor": {
+                    "name": "Status",
+                    "code": "status"
+                  },
+                  "value": "Available"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "fulfillment-001",
+          "type": "CHARGING",
+          "state": {
+            "descriptor": {
+              "code": "PENDING",
+              "name": "Charging Pending"
+            },
+            "updated_at": "2025-07-30T12:06:02Z",
+            "updated_by": "bluechargenet-aggregator.io"
+          },
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2023-07-16T10:00:00+05:30"
+              },
+              "location": {
+                "gps": "28.345345,77.389754",
+                "descriptor": {
+                  "name": "BlueCharge Connaught Place Station"
+                },
+                "address": "Connaught Place, New Delhi"
+              },
+              "instructions": {
+                "short_desc": "Ground floor, Pillar Number 4"
+              }
+            },
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2025-07-16T11:00:00+05:30"
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          },
+        }
+      ],
+      "quote": {
+        "price": {
+          "value": "100",
+          "currency": "INR"
+        },
+        "breakup": [
+          {
+            "title": "Charging session cost (5 kWh @ ₹18.00/kWh)",
+            "item": {
+              "id": "pe-charging-01"
+            },
+            "price": {
+              "value": "90",
+              "currency": "INR"
+            }
+          },
+          {
+            "title": "Service Fee",
+            "price": {
+              "currency": "INR",
+              "value": "10"
+            }
+          }
+        ]
+      },
+      "billing": {
+        "name": "Ravi Kumar",
+        "organization": {
+          "descriptor": {
+            "name": "GreenCharge Pvt Ltd"
+          }
+        },
+        "address": "Apartment 123, MG Road, Bengaluru, Karnataka, 560001, India",
+        "state": {
+          "name": "Karnataka"
+        },
+        "city": {
+          "name": "Bengaluru"
+        },
+        "email": "ravi.kumar@greencharge.com",
+        "phone": "+918765432100",
+        "time": {
+          "timestamp": "2025-07-30T12:02:00Z"
+        },
+        "tax_id": "GSTIN29ABCDE1234F1Z5"
+      },
+      "payments": [
+        {
+          "id": "payment-123e4567-e89b-12d3-a456-426614174000",
+          "collected_by": "BPP",
+          "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
+          "params": {
+            "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+            "amount": "100.00",
+            "currency": "INR"
+          },
+          "type": "PRE-FULFILLMENT",
+          "status": "PAID",
+          "time": {
+            "timestamp": "2025-07-30T14:59:00Z"
+          }
+        }
+      ],
+      "refund_terms": [
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Order Confirmed",
+              "code": "CONFIRMED",
+              "long_desc": "85% refund available if cancelled at least 4 hours before the scheduled charging time"
+            }
+          },
+          "refund_eligible": true,
+          "refund_within": {
+            "duration": "PT2H"
+          },
+          "refund_amount": {
+            "currency": "INR",
+            "value": "85"
+          }
+        },
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Charging Active",
+              "code": "ACTIVE"
+            }
+          },
+          "refund_eligible": false
+        }
+      ]
+    }
+  }
+}
+```
+
+**Order Status:**
+* message.order.id: Unique order identifier assigned by the BPP
+* message.order.fulfillments.state.descriptor.code: Current order status (e.g., "PENDING")
+* message.order.fulfillments.state.updated_at: Timestamp of last status update
+* message.order.fulfillments.state.updated_by: System that updated the status
+
+### **update** (start charging)
+
+#### Physical Charging Process
 
 Before initiating the charging session through the API, the EV driver must complete the following physical steps at the charging station:
 
-1. Drive to the charging point: The user arrives at the reserved charging location at the scheduled time  
-2. Plug the vehicle: Connect the charging cable from the EVSE (Electric Vehicle Supply Equipment) to their vehicle's charging port  
-3. Provide the OTP: Enter or scan the OTP received during the init process to authenticate and authorize the start of the charging session
+1. **Drive to the charging point:** The user arrives at the reserved charging location at the scheduled time
+2. **Plug the vehicle:** Connect the charging cable from the EVSE (Electric Vehicle Supply Equipment) to their vehicle's charging port
+3. **Provide the OTP:** Enter or scan the OTP received during the init process to authenticate and authorize the start of the charging session
 
 Once these physical steps are completed, the charging session can be initiated through the update API call.
 
-This is like pressing the "Start" button on a washing machine. You're telling the charging station "I'm ready to start charging now, please begin the session." It's the moment when you actually start using the charging service you booked.
+> This is like pressing the "Start" button on a washing machine. You're telling the charging station "I'm ready to start charging now, please begin the session." It's the moment when you actually start using the charging service you booked.
 
 ```json
 {
@@ -150,19 +2161,16 @@ This is like pressing the "Start" button on a washing machine. You're telling th
 ```
 
 **Update Target:**
-* message.update_target: Specifies which part of the order to update (e.g., "order.fulfillments.state")  
+* message.update_target: Specifies which part of the order to update (e.g., "order.fulfillments.state")
 * message.order.id: Order identifier from the confirmed booking
-
-**State Change:**
-* message.order.fulfillments.state.descriptor.code: New state value (e.g., "start-charging")  
+* State Change:
+* message.order.fulfillments.state.descriptor.code: New state value (e.g., "start-charging")
 * message.order.fulfillments.type: Service type (set to "CHARGING")
-
-**Authorization:**
+* Authorization:
 * message.order.fulfillments.stops.authorization.token: Authorization token for the charging session. This token validates that the user is authorized to start charging at this station.
 
-### **on_update (start charging)**
-
-This is like getting a "Washing Started" notification from your washing machine. The charging station is saying "Perfect! Your charging session has begun. You can now track your progress and see how much energy is being delivered to your vehicle."
+### **on_update** (start charging)
+* This is like getting a "Washing Started" notification from your washing machine. The charging station is saying "Perfect! Your charging session has begun. You can now track your progress and see how much energy is being delivered to your vehicle."
 
 ```json
 {
@@ -213,14 +2221,14 @@ This is like getting a "Washing Started" notification from your washing machine.
             "value": "18",
             "currency": "INR/kWh"
           },
-          "quantity": {
-            "selected": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "100",
-                "unit": "INR"
+		      "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
               }
-            }
           },
           "tags": [
             {
@@ -316,12 +2324,12 @@ This is like getting a "Washing Started" notification from your washing machine.
           "vehicle": {
             "make": "Tata",
             "model": "Nexon EV"
-          }
+          },
         }
       ],
       "quote": {
         "price": {
-          "value": "118",
+          "value": "100",
           "currency": "INR"
         },
         "breakup": [
@@ -337,34 +2345,6 @@ This is like getting a "Washing Started" notification from your washing machine.
           },
           {
             "title": "Service Fee",
-            "price": {
-              "currency": "INR",
-              "value": "10"
-            }
-          },
-          {
-            "title": "overcharge estimation",
-            "price": {
-              "currency": "INR",
-              "value": "18"
-            }
-          },
-          {
-            "title": "surge price(20%)",
-            "price": {
-              "currency": "INR",
-              "value": "18"
-            }
-          },
-          {
-            "title": "offer discount(20%)",
-            "price": {
-              "currency": "INR",
-              "value": "18"
-            }
-          },
-          {
-            "title": "loyalty program discount",
             "price": {
               "currency": "INR",
               "value": "10"
@@ -400,7 +2380,7 @@ This is like getting a "Washing Started" notification from your washing machine.
           "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
           "params": {
             "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-            "amount": "118.00",
+            "amount": "100.00",
             "currency": "INR"
           },
           "type": "PRE-FULFILLMENT",
@@ -444,8 +2424,8 @@ This is like getting a "Washing Started" notification from your washing machine.
 ```
 
 **Session Status Update:**
-* message.order.fulfillments.state.descriptor.code: Current session status (changed to "ACTIVE")  
-* message.order.fulfillments.state.updated_at: Timestamp when charging started  
+* message.order.fulfillments.state.descriptor.code: Current session status (changed to "ACTIVE")
+* message.order.fulfillments.state.updated_at: Timestamp when charging started
 * message.order.fulfillments.state.updated_by: System that initiated the charging session
 
 ### **track**
@@ -467,7 +2447,7 @@ This is like asking "Where's my package?" on an e-commerce website. You're reque
         },
         "bap_id": "example-bap.com",
         "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
-        "bpp_id": "example-bpp.com",
+        "bpp_id": "example-bpp.com",,
         "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
         "transaction_id": "e0a38442-69b7-4698-aa94-a1b6b5d244c2",
         "message_id": "6ace310b-6440-4421-a2ed-b484c7548bd5",
@@ -476,19 +2456,17 @@ This is like asking "Where's my package?" on an e-commerce website. You're reque
         "ttl": "PT10M"
     },
     "message": {
-        "order_id": "b989c9a9-f603-4d44-b38d-26fd72286b38",
+        "order_id": "b989c9a9-f603-4d44-b38d-26fd72286b38"
         "callback_url": "https://example-bap-url.com/SESSION/5e4f"
     }
 }
 ```
 
 **Tracking Request:**
-* message.order_id: Unique order identifier for the charging session to track.  
-* This links the tracking request to the specific booking.  
-* message.callback_url: Optional URL which can be provided by the BAP, to which the BPP will trigger PATCH requests (with only fields to be updated and any fields that are left out remain unchanged) with real time details of the charging session.
+* **message.order_id:** Unique order identifier for the charging session to track. This links the tracking request to the specific booking.
+* **message.callback_url:** Optional URL which can be provided by the BAP, to which the BPP will trigger PATCH requests (with only fields to be updated and any fields that are left out remain unchanged) with real time details of the charging session.
 
-**Tip for NFOs:**
-* The structure and frequency for the PATCH requests may be decided based on the needs of the network by the NFO. A suggested request structure for the PATCH requests can be found below based on session details in *OCPI-2.2.1*:
+> **Tip for NFOs:** The structure and frequency for the PATCH requests may be decided based on the needs of the network by the NFO. A suggested request structure for the PATCH requests can be found below based on session details in OCPI-2.2.1:
 
 ```json
 {
@@ -515,18 +2493,19 @@ This is like asking "Where's my package?" on an e-commerce website. You're reque
 }
 ```
 
-* kwh: Total energy consumed during the session in kilowatt-hours.  
-* status: Current status of the charging session (e.g., "ACTIVE", "COMPLETED").  
-* currency: Currency used for charging costs (e.g., "INR").  
-* charging_periods: Array containing details of different charging intervals within the session.  
-  * start_date_time: Timestamp when the charging period started.  
-  * dimensions: Array of measurements during the charging period.  
-    * type: Type of measurement (e.g., "ENERGY", "POWER", "CURRENT", "VOLTAGE", "STATE_OF_CHARGE" as per CdrDimensionType *enum in OCPI-2.2.1*).  
-    * volume: Value of the measurement.  
-* total_cost: Breakdown of the total cost for the session.  
-  * excl_vat: Total cost excluding VAT.  
-  * incl_vat: Total cost including VAT.  
-* last_updated: Timestamp of the last update to the session details.
+**Session Data Structure:**
+* **kwh:** Total energy consumed during the session in kilowatt-hours
+* **status:** Current status of the charging session (e.g., "ACTIVE", "COMPLETED")
+* **currency:** Currency used for charging costs (e.g., "INR")
+* **charging_periods:** Array containing details of different charging intervals within the session
+  - **start_date_time:** Timestamp when the charging period started
+  - **dimensions:** Array of measurements during the charging period
+  - **type:** Type of measurement (e.g., "ENERGY", "POWER", "CURRENT", "VOLTAGE", "STATE_OF_CHARGE" as per CdrDimensionType enum in OCPI-2.2.1)
+  - **volume:** Value of the measurement
+* **total_cost:** Breakdown of the total cost for the session
+  - **excl_vat:** Total cost excluding VAT
+  - **incl_vat:** Total cost including VAT
+* **last_updated:** Timestamp of the last update to the session details
 
 ### **on_track**
 
@@ -547,7 +2526,7 @@ This is like getting a FedEx tracking link - "Click here to see your package's j
         },
         "bap_id": "example-bap.com",
         "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
-        "bpp_id": "example-bpp.com",
+        "bpp_id": "example-bpp.com",,
         "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
         "transaction_id": "e0a38442-69b7-4698-aa94-a1b6b5d244c2",
         "message_id": "6ace310b-6440-4421-a2ed-b484c7548bd5",
@@ -566,18 +2545,291 @@ This is like getting a FedEx tracking link - "Click here to see your package's j
 ```
 
 **Tracking Response:**
-* message.tracking.id: Unique tracking identifier for the charging session  
-* message.tracking.url: Live tracking dashboard URL for monitoring charging progress  
-* message.tracking.status: Current tracking status (e.g., "active" for ongoing session)
+* **message.tracking.id:** Unique tracking identifier for the charging session
+* **message.tracking.url:** Live tracking dashboard URL for monitoring charging progress
+* **message.tracking.status:** Current tracking status (e.g., "active" for ongoing session)
 
-### **Asynchronous on_status (temporary connection interruption)**
+### **Asynchronous on_status** (temporary connection interruption)
 
-1. This is used in case of a connection interruption during a charging session.  
-2. Applicable only in case of temporary connection interruptions, BPPs expect to recover from these connection interruptions in the short term.  
-3. BPP notifies the BAP about this interruption using an unsolicited on_status callback.  
-4. NOTE: if the issue remains unresolved and BPP expects it to be a long term issue, BPP must send an unsolicited on_update to the BAP with relevant details.
+This is used in case of a connection interruption during a charging session.
 
-### **Asynchronous on_update (stop charging)**
+* Applicable only in case of temporary connection interruptions, BPPs expect to recover from these connection interruptions in the short term
+* BPP notifies the BAP about this interruption using an unsolicited on_status callback
+
+> **NOTE:** If the issue remains unresolved and BPP expects it to be a long term issue, BPP must send an unsolicited on_update to the BAP with relevant details.
+
+> **Understanding Overcharge and Undercharge Scenarios:** For detailed information on handling billing adjustments when charging sessions are interrupted or experience connectivity issues (leading to undercharge or overcharge situations), please refer to the [Undercharge & Overcharge](./3_Under_and_overcharge.md) use case documentation.
+
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_status",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
+  },
+  "message": {
+    "order": {
+      "id": "6743e9e2-4fb5-487c-92b7",
+      "provider": {
+        "id": "cpo1.com",
+        "descriptor": {
+          "name": "CPO1 EV charging Company",
+          "short_desc": "CPO1 provides EV charging facility across India",
+          "images": [
+            {
+              "url": "https://cpo1.com/images/logo.png"
+            }
+          ]
+        }
+      },
+      "items": [
+        {
+          "id": "pe-charging-01",
+          "descriptor": {
+            "name": "EV Charger #1 (AC Fast Charger)",
+            "code": "ev-charger"
+          },
+          "price": {
+            "value": "18",
+            "currency": "INR/kWh"
+          },
+		      "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
+              }
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "connector-specifications",
+                "name": "Connector Specifications"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "name": "connector Id",
+                    "code": "connector-id"
+                  },
+                  "value": "con1"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Type",
+                    "code": "power-type"
+                  },
+                  "value": "AC_3_PHASE"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Type",
+                    "code": "connector-type"
+                  },
+                  "value": "CCS2"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Format",
+                    "code": "connector-format"
+                  },
+                  "value": "SOCKET"
+                },
+                {
+                  "descriptor": {
+                    "name": "Charging Speed",
+                    "code": "charging-speed"
+                  },
+                  "value": "FAST"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Rating",
+                    "code": "power-rating"
+                  },
+                  "value": "30kW"
+                },
+                {
+                  "descriptor": {
+                    "name": "Status",
+                    "code": "status"
+                  },
+                  "value": "Available"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "fulfillment-001",
+          "type": "CHARGING",
+          "state": {
+            "descriptor": {
+              "code": "CONNECTION-INTERRUPTED",
+              "name": "Charging connection lost. Retrying automatically. If this continues, please check your cable"
+            },
+            "updated_at": "2025-07-30T13:07:02Z",
+            "updated_by": "bluechargenet-aggregator.io"
+          },
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2023-07-16T10:00:00+05:30"
+              },
+              "location": {
+                "gps": "28.345345,77.389754",
+                "descriptor": {
+                  "name": "BlueCharge Connaught Place Station"
+                },
+                "address": "Connaught Place, New Delhi"
+              },
+              "instructions": {
+                "short_desc": "Ground floor, Pillar Number 4"
+              }
+            },
+            {
+              "type": "END",
+              "time": {
+                "timestamp": "2023-07-16T10:30:00+05:30"
+              },
+              "location": {
+                "gps": "28.345345,77.389754",
+                "descriptor": {
+                  "name": "BlueCharge Connaught Place Station"
+                },
+                "address": "Connaught Place, New Delhi"
+              },
+              "instructions": {
+                "short_desc": "Ground floor, Pillar Number 4"
+              }
+            }
+          ]
+        }
+      ],
+      "quote": {
+        "price": {
+          "value": "85",
+          "currency": "INR"
+        },
+        "breakup": [
+          {
+            "title": "Charging session cost (5 kWh @ ₹18.00/kWh)",
+            "item": {
+              "id": "pe-charging-01"
+            },
+            "price": {
+              "value": "75",
+              "currency": "INR"
+            }
+          },
+          {
+            "title": "Service Fee",
+            "price": {
+              "currency": "INR",
+              "value": "10"
+            }
+          }
+        ]
+      },
+      "billing": {
+        "name": "Ravi Kumar",
+        "organization": {
+          "descriptor": {
+            "name": "GreenCharge Pvt Ltd"
+          }
+        },
+        "address": "Apartment 123, MG Road, Bengaluru, Karnataka, 560001, India",
+        "state": {
+          "name": "Karnataka"
+        },
+        "city": {
+          "name": "Bengaluru"
+        },
+        "email": "ravi.kumar@greencharge.com",
+        "phone": "+918765432100",
+        "time": {
+          "timestamp": "2025-07-30T12:02:00Z"
+        },
+        "tax_id": "GSTIN29ABCDE1234F1Z5"
+      },
+      "payments": [
+        {
+          "id": "payment-123e4567-e89b-12d3-a456-426614174000",
+          "collected_by": "bpp",
+          "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
+          "params": {
+            "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+            "amount": "100.00",
+            "currency": "INR"
+          },
+          "type": "PRE-FULFILLMENT",
+          "status": "PAID",
+          "time": {
+            "timestamp": "2025-07-30T14:59:00Z"
+          }
+        }
+      ],
+      "refund_terms": [
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Order Confirmed",
+              "code": "CONFIRMED",
+              "long_desc": "85% refund available if cancelled at least 4 hours before the scheduled charging time"
+            }
+          },
+          "refund_eligible": true,
+          "refund_within": {
+            "duration": "PT2H"
+          },
+          "refund_amount": {
+            "currency": "INR",
+            "value": "85"
+          }
+        },
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Charging Active",
+              "code": "ACTIVE"
+            }
+          },
+          "refund_eligible": false
+        }
+      ]
+    }
+  }
+}
+```
+
+**Session Interruptions:**
+* **Message.order.fulfillments.state.descriptor.code:** Interruption state (changed to "CONNECTION-INTERRUPTED")
+* **Message.order.fulfillments.state.descriptor.name:** Changed to a relevant notification
+* **message.order.fulfillments.state.updated_at:** Timestamp when charging session ended
+* **message.order.fulfillments.state.updated_by:** System that completed the session
+
+### **Asynchronous on_update** (stop charging)
 
 This is like getting a "Washing Complete" notification from your washing machine. The charging station is saying "Your charging session has finished! Here's the final bill and session summary."
 
@@ -630,21 +2882,21 @@ This is like getting a "Washing Complete" notification from your washing machine
             "value": "18",
             "currency": "INR/kWh"
           },
-          "quantity": {
-            "selected": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "100",
-                "unit": "INR"
+	        "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
+              },
+              "allocated": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "5.2",
+                     "unit": "kWh"
+                  }
               }
-            },
-            "allocated": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "5.2",
-                "unit": "kWh"
-              }
-            }
           },
           "tags": [
             {
@@ -762,12 +3014,12 @@ This is like getting a "Washing Complete" notification from your washing machine
         },
         "breakup": [
           {
-            "title": "Charging session cost (5 kWh @ ₹18.00/kWh)",
+            "title": "Charging session cost (3.7 kWh @ ₹18.00/kWh)",
             "item": {
               "id": "pe-charging-01"
             },
             "price": {
-              "value": "75",
+              "value": "68",
               "currency": "INR"
             }
           },
@@ -776,34 +3028,6 @@ This is like getting a "Washing Complete" notification from your washing machine
             "price": {
               "currency": "INR",
               "value": "10"
-            }
-          },
-          {
-            "title": "surge price(20%)",
-            "price": {
-              "currency": "INR",
-              "value": "18"
-            }
-          },
-          {
-            "title": "offer discount(20%)",
-            "price": {
-              "currency": "INR",
-              "value": "18"
-            }
-          },
-          {
-            "title": "loyalty program discount",
-            "price": {
-              "currency": "INR",
-              "value": "-10"
-            }
-          },
-          {
-            "title": "Overcharge refund",
-            "price": {
-              "currency": "INR",
-              "value": "-33"
             }
           }
         ]
@@ -836,7 +3060,7 @@ This is like getting a "Washing Complete" notification from your washing machine
           "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
           "params": {
             "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-            "amount": "118.00",
+            "amount": "100.00",
             "currency": "INR"
           },
           "type": "PRE-FULFILLMENT",
@@ -847,7 +3071,7 @@ This is like getting a "Washing Complete" notification from your washing machine
         },
         {
           "params": {
-            "amount": "33.00",
+            "amount": "22.00",
             "currency": "INR"
           },
           "type": "POST-FULFILLMENT",
@@ -863,7 +3087,7 @@ This is like getting a "Washing Complete" notification from your washing machine
                "descriptor": {
                  "code": "refund-amount",
                },
-               "value": "33INR"
+               "value": "22INR"
              }
            ]
         }
@@ -902,16 +3126,16 @@ This is like getting a "Washing Complete" notification from your washing machine
 ```
 
 **Session Completion:**
-* message.order.fulfillments.state.descriptor.code: Final session status (changed to "COMPLETED")  
-* message.order.fulfillments.state.updated_at: Timestamp when charging session ended  
-* message.order.fulfillments.state.updated_by: System that completed the session
+* **message.order.fulfillments.state.descriptor.code:** Final session status (changed to "COMPLETED")
+* **message.order.fulfillments.state.updated_at:** Timestamp when charging session ended
+* **message.order.fulfillments.state.updated_by:** System that completed the session
 
 **Session Timeline:**
-* message.order.fulfillments.stops.time.timestamp: Session start time  
-* message.order.fulfillments.stops.time.timestamp: Session end time  
-* message.order.fulfillments.stops.type: Set to "finish" indicating session completion
+* **message.order.fulfillments.stops.time.timestamp:** Session start time
+* **message.order.fulfillments.stops.time.timestamp:** Session end time
+* **message.order.fulfillments.stops.type:** Set to "finish" indicating session completion
 
-### **Rating**
+### **rating**
 
 This is like leaving a review on Amazon or rating your Uber driver. You're giving feedback on your charging experience - how easy it was to find the station, how fast the charging was, and overall satisfaction. It helps other users and improves the service.
 
@@ -1017,7 +3241,7 @@ This is like calling customer service when you have a problem with your hotel bo
   "message": {
     "support": {
       "ref_id": "6743e9e2-4fb5-487c-92b7",
-   "callback_phone": "+911234567890",
+	 "callback_phone": "+911234567890",
       "email": "ravi.kumar@bookmycharger.com"
     }
   }
@@ -1060,5 +3284,3 @@ This is like getting a customer service response - "Here's our support phone num
   }
 }
 ```
-
-**Note:** All remaining API calls (track, on_track, asynchronous on_update, on_status, rating, on_rating, support, on_support) work exactly the same as the advance reservation use case ([Use Case 2](./2_Reservation_use_case.md)).

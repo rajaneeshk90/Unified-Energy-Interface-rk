@@ -330,6 +330,258 @@ The BPP responds with a comprehensive catalog of available loyalty programs from
 
 Loyalty program catalogs can be bundled together with charging station catalogs in a single response. This integrated approach allows consumers to discover both charging services and loyalty programs simultaneously, enabling cross-selling opportunities and providing a comprehensive view of available offerings from charging providers.
 
+```json
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_search",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z"
+  },
+  "message": {
+    "catalog": {
+      "providers": [
+        {
+          "id": "cpo1.com",
+          "descriptor": {
+            "name": "CPO1 EV charging Company",
+            "short_desc": "CPO1 provides EV charging facility across India",
+            "images": [
+              {
+                "url": "https://cpo1.com/images/logo.png"
+              }
+            ]
+          },
+          "categories": [
+            {
+              "id": "category-gt",
+              "descriptor": {
+                "code": "green-tariff",
+                "name": "green tariff"
+              }
+            },
+            {
+              "id": "loyalty-programs",
+              "descriptor": {
+                "code": "loyalty-program",
+                "name": "Loyalty Programs"
+              }
+            }
+          ],
+          "locations": [
+            {
+              "id": "LOC-DELHI-001",
+              "gps": "28.345345,77.389754",
+              "descriptor": {
+                "name": "BlueCharge Connaught Place Station"
+              },
+              "address": "Connaught Place, New Delhi"
+            }
+          ],
+          "fulfillments": [
+            {
+              "id": "fulfillment-001",
+              "type": "CHARGING",
+              "stops": [
+                {
+                  "location": {
+                    "gps": "28.6304,77.2177",
+                    "address": "Saket, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:10:00:00",
+                      "end": "2025:09:24:11:00:00"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "fulfillment-002",
+              "type": "DIGITAL",
+              "stops": [
+                {
+                  "type": "START",
+                  "time": {
+                    "timestamp": "2025:09:24:10:15:00"
+                  }
+                }
+              ]
+            }
+          ],
+          "items": [
+            {
+              "id": "pe-charging-01",
+              "descriptor": {
+                "name": "EV Charger #1 (AC Fast Charger)",
+                "code": "CHARGER",
+                "short_desc": "Book now"
+              },
+              "price": {
+                "value": "18",
+                "currency": "INR/kWh"
+              },
+              "fulfillment_ids": [
+                "fulfillment-001"
+              ],
+              "category_ids": [
+                "category-gt"
+              ],
+              "location_ids": [
+                "LOC-DELHI-001"
+              ],
+              "tags": [
+                {
+                  "descriptor": {
+                    "code": "connector-specifications",
+                    "name": "Connector Specifications"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "name": "connector Id",
+                        "code": "connector-id"
+                      },
+                      "value": "1"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Type",
+                        "code": "power-type"
+                      },
+                      "value": "AC_3_PHASE"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Type",
+                        "code": "connector-type"
+                      },
+                      "value": "CCS2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Charging Speed",
+                        "code": "charging-speed"
+                      },
+                      "value": "FAST"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Rating",
+                        "code": "power-rating"
+                      },
+                      "value": "30kW"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Status",
+                        "code": "status"
+                      },
+                      "value": "Available"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "loyalty-gold-pass",
+              "descriptor": {
+                "name": "CPO Gold Pass",
+                "code": "loyalty-subscription",
+                "short_desc": "Premium loyalty program with exclusive benefits",
+                "long_desc": "Get 10% discount on weekday charging, idle fee waiver up to 15 minutes, priority access to charging slots, and dedicated customer support.",
+                "additional_desc": {
+                  "url": "https://example-bpp.com/gold-pass.html",
+                  "content-type": "text/html"
+                }
+              },
+              "price": {
+                "value": "299",
+                "currency": "INR"
+              },
+              "fulfillment_ids": [
+                "fulfillment-002"
+              ],
+              "category_ids": [
+                "loyalty-programs"
+              ],
+              "tags": [
+                {
+                  "descriptor": {
+                    "code": "loyalty-benefits",
+                    "name": "Program Benefits"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "code": "weekday-discount",
+                        "name": "Weekday Discount"
+                      },
+                      "value": "10%"
+                    },
+                    {
+                      "descriptor": {
+                        "code": "idle-fee-waiver",
+                        "name": "Idle Fee Waiver"
+                      },
+                      "value": "15 minutes"
+                    },
+                    {
+                      "descriptor": {
+                        "code": "priority-access",
+                        "name": "Priority Access"
+                      },
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "descriptor": {
+                    "code": "subscription-details",
+                    "name": "Subscription Details"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "code": "validity-period",
+                        "name": "Validity Period"
+                      },
+                      "value": "30 days"
+                    },
+                    {
+                      "descriptor": {
+                        "code": "tier-level",
+                        "name": "Tier Level"
+                      },
+                      "value": "Gold"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
 **Note:** These are just example catalogs. CPOs are encouraged to innovate on various catalog offerings that involve a wide set of features. More such examples will be added to this document in future releases.
 
 The BPP may create a page with the details of the loyalty program including terms and conditions and transmit it via item.descriptor.additional_desc. The tags are optional and the BAP may display the same to the end user. They are not standardised and the BPP may transmit them as per their discretion and structure of the loyalty program.
@@ -505,7 +757,16 @@ The consumer initiates the loyalty program purchase by providing complete billin
       "fulfillments": [
         {
           "id": "fulfillment-002",
-          "type": "DIGITAL"
+          "type": "DIGITAL",
+          "customer": {
+            "person": {
+              "name": "Kavya Nair"
+            },
+            "contact": {
+              "phone": "+91-9876543210",
+              "email": "kavya.nair@email.com"
+            }
+          }
         }
       ],
       "billing": {
@@ -602,6 +863,21 @@ The BPP responds with comprehensive payment information and loyalty program acti
               ]
             }
           ]
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "fulfillment-002",
+          "type": "DIGITAL",
+          "customer": {
+            "person": {
+              "name": "Kavya Nair"
+            },
+            "contact": {
+              "phone": "+91-9876543210",
+              "email": "kavya.nair@email.com"
+            }
+          }
         }
       ],
       "billing": {
@@ -708,7 +984,16 @@ The consumer confirms the loyalty program purchase after successful payment comp
       "fulfillments": [
         {
           "id": "fulfillment-002",
-          "type": "DIGITAL"
+          "type": "DIGITAL",
+          "customer": {
+            "person": {
+              "name": "Kavya Nair"
+            },
+            "contact": {
+              "phone": "+91-9876543210",
+              "email": "kavya.nair@email.com"
+            }
+          }
         }
       ],
       "billing": {

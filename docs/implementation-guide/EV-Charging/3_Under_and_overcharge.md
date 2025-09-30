@@ -47,18 +47,18 @@ The above under and overcharge scenarios are supported through Beckn protocol ca
 * Final billing adjustment: The adjusted bill reflecting overcharge or undercharge reconciliation is conveyed through the on_update API quote  
 * Real-time status updates: Continuous session monitoring and status communication ensure transparent billing for actual energy delivered
 
-### **Asynchronous on_status (temporary connection interruption)**
+### **on_init**
 
-This is used in case of a connection interruption during a charging session.  
-Applicable only in case of temporary connection interruptions, BPPs expect to recover from these connection interruptions in the short term.  
-BPP notifies the BAP about this interruption using an unsolicited on_status callback.  
-NOTE: if the issue remains unresolved and BPP expects it to be a long term issue, BPP must send an unsolicited on_update to the BAP with relevant details.
+<make this language RFC style>
+To account for the estimated overcharge for each transaction, BPP adds an overcharge estimation in the initial quotation for the charging session. This is reflected in the order.quote object.
+
+Note: Overcharge is an estimated portion of the quote.
 
 ```json
 {
   "context": {
     "domain": "deg:ev-charging",
-    "action": "on_status",
+    "action": "on_init",
     "location": {
       "country": {
         "code": "IND"
@@ -79,7 +79,6 @@ NOTE: if the issue remains unresolved and BPP expects it to be a long term issue
   },
   "message": {
     "order": {
-      "id": "6743e9e2-4fb5-487c-92b7",
       "provider": {
         "id": "cpo1.com",
         "descriptor": {
@@ -103,14 +102,14 @@ NOTE: if the issue remains unresolved and BPP expects it to be a long term issue
             "value": "18",
             "currency": "INR/kWh"
           },
-          "quantity": {
-            "selected": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "100",
-                "unit": "INR"
+	        "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
               }
-            }
           },
           "tags": [
             {
@@ -124,7 +123,7 @@ NOTE: if the issue remains unresolved and BPP expects it to be a long term issue
                     "name": "connector Id",
                     "code": "connector-id"
                   },
-                  "value": "con1"
+                  "value": "1"
                 },
                 {
                   "descriptor": {
@@ -177,19 +176,11 @@ NOTE: if the issue remains unresolved and BPP expects it to be a long term issue
         {
           "id": "fulfillment-001",
           "type": "CHARGING",
-          "state": {
-            "descriptor": {
-              "code": "CONNECTION-INTERRUPTED",
-              "name": "Charging connection lost. Retrying automatically. If this continues, please check your cable"
-            },
-            "updated_at": "2025-07-30T13:07:02Z",
-            "updated_by": "bluechargenet-aggregator.io"
-          },
           "stops": [
             {
               "type": "START",
               "time": {
-                "timestamp": "2025-07-16T10:00:00+05:30"
+                "timestamp": "2023-07-16T10:00:00+05:30"
               },
               "location": {
                 "gps": "28.345345,77.389754",
@@ -199,31 +190,36 @@ NOTE: if the issue remains unresolved and BPP expects it to be a long term issue
                 "address": "Connaught Place, New Delhi"
               },
               "instructions": {
-                "short_desc": "Ground floor, Pillar Number 4"
+                "short_desc": "OTP will be shared to the user's registered number to confirm order"
               }
+              "authorization": {
+                "type": "OTP"
+              },
             },
             {
-              "type": "END",
+              "type": "STOP",
               "time": {
-                "timestamp": "2025-07-16T10:30:00+05:30"
-              },
-              "location": {
-                "gps": "28.345345,77.389754",
-                "descriptor": {
-                  "name": "BlueCharge Connaught Place Station"
-                },
-                "address": "Connaught Place, New Delhi"
-              },
-              "instructions": {
-                "short_desc": "Ground floor, Pillar Number 4"
+                "timestamp": "2025:09:24:11:00:00"
               }
             }
-          ]
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          },
+          "customer": {
+            "person": {
+              "name": "Ravi Kumar"
+            },
+            "contact": {
+              "phone": "+91-9887766554"
+            }
+          }
         }
       ],
       "quote": {
         "price": {
-          "value": "85",
+          "value": "118",
           "currency": "INR"
         },
         "breakup": [
@@ -233,36 +229,22 @@ NOTE: if the issue remains unresolved and BPP expects it to be a long term issue
               "id": "pe-charging-01"
             },
             "price": {
-              "value": "75",
+              "value": "90",
               "currency": "INR"
             }
           },
           {
-            "title": "Service Fee",
+            "title": "Service fee",
             "price": {
               "currency": "INR",
               "value": "10"
             }
           },
           {
-            "title": "surge price(20%)",
+            "title": "overcharge estimation",
             "price": {
               "currency": "INR",
               "value": "18"
-            }
-          },
-          {
-            "title": "offer discount(20%)",
-            "price": {
-              "currency": "INR",
-              "value": "18"
-            }
-          },
-          {
-            "title": "loyalty program discount",
-            "price": {
-              "currency": "INR",
-              "value": "10"
             }
           }
         ]
@@ -291,18 +273,46 @@ NOTE: if the issue remains unresolved and BPP expects it to be a long term issue
       "payments": [
         {
           "id": "payment-123e4567-e89b-12d3-a456-426614174000",
-          "collected_by": "bpp",
+          "collected_by": "BPP",
           "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
           "params": {
-            "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
             "amount": "118.00",
-            "currency": "INR"
+            "currency": "INR",
+            "bank_code": "HDFC000123",
+            "bank_account_number": "1131324242424"
           },
           "type": "PRE-FULFILLMENT",
-          "status": "PAID",
+          "status": "NOT-PAID",
           "time": {
             "timestamp": "2025-07-30T14:59:00Z"
-          }
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "payment-methods"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "code": "BANK-TRANSFER",
+                    "short_desc": "Pay by transferring to a bank account"
+                  }
+                },
+                {
+                  "descriptor": {
+                    "code": "PAYMENT-LINK",
+                    "short_desc": "Pay through a bank link received"
+                  }
+                },
+                {
+                  "descriptor": {
+                    "code": "UPI-TRANSFER",
+                    "short_desc": "Pay by setting a UPI mandate"
+                  }
+                }
+              ]
+            }
+          ]
         }
       ],
       "refund_terms": [
@@ -338,13 +348,18 @@ NOTE: if the issue remains unresolved and BPP expects it to be a long term issue
 }
 ```
 
-**Session Interruptions:**
-* Message.order.fulfillments.state.descriptor.code: Interruption state (changed to "CONNECTION-INTERRUPTED")  
-* Message.order.fulfillments.state.descriptor.name: (changed to a relevant notification)  
-* message.order.fulfillments.state.updated_at: Timestamp when charging session ended  
-* message.order.fulfillments.state.updated_by: System that completed the session
 
 ### **Asynchronous on_update (stop charging with reconciliation)**
+
+### **Session Completion and Final Billing**
+
+When the charging session ends (gracefully or with error):
+
+* The BPP SHALL send the final status to the BAP with the complete billing details via an unsolicited `on_update` callback
+* The `order.quote` object MUST contain any overcharge refund that is applicable for this charging session
+* The `order.quote.breakup` array SHALL include overcharge refund line items with negative values
+* Each refund line item MUST be clearly identified in the `title` field (e.g., "Overcharge refund")
+* The final `order.quote.price.value` SHALL reflect the net amount after all adjustments
 
 This is like getting a "Washing Complete" notification from your washing machine. The charging station is saying "Your charging session has finished! Here's the final bill and session summary with any adjustments for actual energy delivered."
 
@@ -408,7 +423,7 @@ This is like getting a "Washing Complete" notification from your washing machine
             "allocated": {
               "measure": {
                 "type": "CONSTANT",
-                "value": "5.2",
+                "value": "5.5",
                 "unit": "kWh"
               }
             }
@@ -524,17 +539,17 @@ This is like getting a "Washing Complete" notification from your washing machine
       ],
       "quote": {
         "price": {
-          "value": "78",
+          "value": "109",
           "currency": "INR"
         },
         "breakup": [
           {
-            "title": "Charging session cost (5 kWh @ ₹18.00/kWh)",
+            "title": "Charging session cost (5.5 kWh @ ₹18.00/kWh)",
             "item": {
               "id": "pe-charging-01"
             },
             "price": {
-              "value": "75",
+              "value": "99",
               "currency": "INR"
             }
           },
@@ -546,31 +561,10 @@ This is like getting a "Washing Complete" notification from your washing machine
             }
           },
           {
-            "title": "surge price(20%)",
-            "price": {
-              "currency": "INR",
-              "value": "18"
-            }
-          },
-          {
-            "title": "offer discount(20%)",
-            "price": {
-              "currency": "INR",
-              "value": "18"
-            }
-          },
-          {
-            "title": "loyalty program discount",
-            "price": {
-              "currency": "INR",
-              "value": "-10"
-            }
-          },
-          {
             "title": "Overcharge refund",
             "price": {
               "currency": "INR",
-              "value": "-33"
+              "value": "-9"
             }
           }
         ]
@@ -614,7 +608,7 @@ This is like getting a "Washing Complete" notification from your washing machine
         },
         {
           "params": {
-            "amount": "33.00",
+            "amount": "9.00",
             "currency": "INR"
           },
           "type": "POST-FULFILLMENT",
@@ -630,7 +624,7 @@ This is like getting a "Washing Complete" notification from your washing machine
                "descriptor": {
                  "code": "refund-amount",
                },
-               "value": "33INR"
+               "value": "9INR"
              }
            ]
         }
@@ -679,8 +673,8 @@ This is like getting a "Washing Complete" notification from your washing machine
 * message.order.fulfillments.stops.type: Set to "finish" indicating session completion
 
 **Key Reconciliation Fields:**
-* message.order.items[].quantity.allocated: Actual energy delivered (e.g., "5.2" kWh)
-* message.order.quote.breakup[].title: "Overcharge refund" or "Undercharge adjustment"
+* message.order.items[].quantity.allocated: Actual energy delivered (e.g., "5.5" kWh)
+* message.order.quote.breakup[].title: "Overcharge refund"
 * message.order.quote.breakup[].price.value: Adjustment amount (negative for refunds)
 * message.order.payments[].type: "POST-FULFILLMENT" for reconciliation payments
 * message.order.payments[].tags: Refund type and amount details
@@ -690,7 +684,7 @@ This is like getting a "Washing Complete" notification from your washing machine
 ### **For BAPs (Consumer Apps):**
 1. **Real-time Status Updates**: Implement push notifications for connection interruptions
 2. **Transparent Messaging**: Clearly communicate billing adjustments to users
-3. **Refund Processing**: Handle automatic refunds for overpayments
+3. **Refund Processing**: Handle automatic refunds for over payments
 4. **Session Recovery**: Allow users to resume interrupted sessions when possible
 
 ### **For BPPs (Service Providers):**

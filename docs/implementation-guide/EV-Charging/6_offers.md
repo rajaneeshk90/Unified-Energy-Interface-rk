@@ -32,91 +32,65 @@ This section covers promotional offers and discounts that can be applied to EV c
 
 ## **User Journey**
 
-**Promotional Discovery:**
-Sarah, a regular EV user, opens her charging app and sees a banner: "Weekend Special: 25% off all charging sessions at CPO1 stations this Saturday and Sunday!" She taps to learn more and sees the offer details, validity period, and participating locations.
+While browsing the charging app for a session, Srilekha notices a banner:
 
-**Offer Application:**
-During her weekend trip, Sarah searches for charging stations and notices that CPO1 stations show the discounted rates prominently. She selects a station and proceeds with booking, seeing the offer automatically applied in the pricing breakdown.
+> "Limited Time Offer: ₹20 off when you charge above 5 kWh – Valid till Sunday!"
 
-**Session Completion:**
-After charging, Sarah receives a detailed receipt showing the original price, discount amount, and final amount paid. She also gets a notification about similar upcoming offers.
+### **Discovery**
+
+Srilekha searches for a charger. The app shows eligible stations with a badge or label indicating the reward:
+
+* "Offer: ₹20 off above 5 kWh"
+* Visible next to charger name or on charger details screen
+* Optional "Know More" link to view:
+  - Offer conditions
+  - Validity window
+  - Eligible locations
+
+### **Charging Session Initiation**
+
+Srilekha selects a charger that displays the reward. Before starting, she sees a preview:
+
+* Estimated cost based on kWh
+* Reward condition reminder: "Charge ≥5 kWh to get ₹20 off"
+* Final price estimate with and without reward
+
+### **Charging**
+
+While charging, the app shows real-time updates (optional):
+
+* Energy delivered
+* How close she is to hitting the reward threshold
+* "You will unlock ₹20 off!" once 5 kWh is crossed
+
+If the session ends before meeting the threshold, app shows:
+
+* "You used 3.2 kWh - reward not applied"
+
+### **Post-Charging**
+
+Srilekha receives a receipt or invoice with a clear breakdown:
+
+* Base charge (e.g., ₹60)
+* Reward discount (e.g., – ₹20)
+* Final amount paid (e.g., ₹40)
+* Message: "Thanks for charging with us. You saved ₹20 with this week's offer!"
+
+## **Offer Object Fields**
+
+The following fields in the offer object provide detailed information about promotional offers:
+
+* **message.catalog.providers.offers.id:** Unique identifier for the promotional offer
+* **message.catalog.providers.offers.descriptor.name:** Human-readable name of the offer (e.g., "Early Bird Charging Special")
+* **message.catalog.providers.offers.descriptor.code:** Machine-readable offer code (e.g., "early-bird-discount")
+* **message.catalog.providers.offers.descriptor.short_desc:** Brief description of the offer benefits
+* **message.catalog.providers.offers.descriptor.long_desc:** Detailed explanation of offer terms, conditions, and target audience
+* **message.catalog.providers.offers.descriptor.images:** Visual promotional materials for the offer
+* **message.catalog.providers.offers.location_ids:** Specific charging locations where the offer is applicable
+* **message.catalog.providers.offers.item_ids:** Specific charging items/services covered by the offer
+* **message.catalog.providers.offers.tags:** Structured offer metadata including discount percentage, validity periods, applicable days, and offer type classification
 
 ## **API Implementation**
-
-### **Search with Offer Discovery**
-
-The consumer searches for charging stations and can discover available offers through the search results.
-
-```json
-{
-  "context": {
-    "ttl": "PT10M",
-    "action": "search",
-    "location": {
-      "country": {
-        "code": "IND"
-      },
-      "city": {
-        "code": "std:080"
-      }
-    },
-    "timestamp": "2024-08-05T09:21:12.618Z",
-    "message_id": "e138f204-ec0b-415d-9c9a-7b5bafe10bfe",
-    "transaction_id": "2ad735b9-e190-457f-98e5-9702fd895996",
-    "domain": "deg:ev-charging",
-    "version": "1.1.0",
-    "bap_id": "example-bap.com",
-    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1"
-  },
-  "message": {
-    "intent": {
-      "descriptor": {
-        "name": "EV charger"
-      },
-      "item": {
-        "descriptor": {
-          "code": "CHARGER"
-        }
-      },
-      "fulfillment": {
-        "type": "CHARGING",
-        "stops": [
-          {
-            "location": {
-              "circle": {
-                "gps": "12.423423,77.325647",
-                "radius": {
-                  "value": "5",
-                  "unit": "km"
-                }
-              }
-            },
-            "type": "START-CHARGING",
-            "time": {
-              "range": {
-                "start": "2025:09:24:10:00:00",
-                "end": "2025:09:24:16:00:00"
-              }
-            }
-          }
-        ],
-        "tags": [
-          {
-            "list": [
-              {
-                "descriptor": {
-                  "code": "connector-type"
-                },
-                "value": "CCS2"
-              }
-            ]
-          }
-        ]
-      }
-    }
-  }
-}
-```
 
 ### **on_search with Offers**
 
@@ -158,13 +132,115 @@ The BPP responds with charging stations that include available offers and promot
               }
             ]
           },
-          "categories": [
+          "locations": [
             {
-              "id": "weekend-special",
+              "id": "LOC-DELHI-001",
+              "gps": "28.345345,77.389754",
               "descriptor": {
-                "code": "promotional-offer",
-                "name": "Weekend Special Offer"
+                "name": "BlueCharge Connaught Place Station"
+              },
+              "address": "Connaught Place, New Delhi"
+            }
+          ],
+          "fulfillments": [
+            {
+              "id": "fulfillment-001",
+              "type": "CHARGING",
+              "stops": [
+                {
+                  "location": {
+                    "gps": "28.6304,77.2177",
+                    "address": "Connaught Place, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:10:00:00",
+                      "end": "2025:09:24:11:00:00"
+                    }
+                  }
+                },
+                {
+                  "location": {
+                    "gps": "28.6304,77.2177",
+                    "address": "Connaught Place, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:12:00:00",
+                      "end": "2025:09:24:13:00:00"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "fulfillment-002",
+              "type": "CHARGING",
+              "stops": [
+                {
+                  "location": {
+                    "gps": "28.6310,77.2200",
+                    "address": "Saket, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:11:00:00",
+                      "end": "2025:09:24:12:00:00"
+                    }
+                  }
+                },
+                {
+                  "location": {
+                    "gps": "28.6310,77.2200",
+                    "address": "Saket, New Delhi"
+                  },
+                  "time": {
+                    "range": {
+                      "start": "2025:09:24:15:00:00",
+                      "end": "2025:09:24:16:00:00"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "offers": [
+            {
+              "id": "offer-001",
+              "descriptor": {
+                "name": "Early Bird Charging Special",
+                "code": "early-bird-discount",
+                "short_desc": "20% off on all charging sessions booked before 12 PM",
+                "long_desc": "Get 20% discount on both AC and DC fast charging at our Connaught Place station when you book your charging slot before 12:00 PM. Valid for all connector types including CCS2. Perfect for early commuters and business travelers.",
+                "images": [
+                  {
+                    "url": "https://cpo1.com/images/early-bird-offer.png"
+                  }
+                ]
+              },
+              "location_ids": [
+                "LOC-DELHI-001"
+              ],
+              "item_ids": [
+                "pe-charging-01",
+                "pe-charging-02"
+              ],
+              "time": {
+                "range": {
+                  "start": "2025-09-16T04:00:00Z",
+                  "end": "2025-09-16T012:00:00Z"
+                }
               }
+            },
+            {
+              "id": "offer-002",
+              "descriptor": {
+                "name": "Location Based Offer",
+                "short_desc": "10% off on all orders from our new location"
+              },
+              "location_ids": [
+                "LOC-DELHI-001"
+              ]
             }
           ],
           "items": [
@@ -172,80 +248,17 @@ The BPP responds with charging stations that include available offers and promot
               "id": "pe-charging-01",
               "descriptor": {
                 "name": "EV Charger #1 (AC Fast Charger)",
-                "code": "ev-charger",
-                "short_desc": "Fast charging with weekend discount"
+                "code": "CHARGER"
               },
               "price": {
                 "value": "18",
                 "currency": "INR/kWh"
               },
-              "category_ids": [
-                "weekend-special"
+              "fulfillment_ids": [
+                "fulfillment-001"
               ],
-              "offers": [
-                {
-                  "id": "weekend-discount-25",
-                  "descriptor": {
-                    "name": "Weekend Special - 25% Off",
-                    "short_desc": "Get 25% off on all charging sessions this weekend"
-                  },
-                  "price": {
-                    "value": "13.50",
-                    "currency": "INR/kWh"
-                  },
-                  "tags": [
-                    {
-                      "descriptor": {
-                        "code": "offer-details",
-                        "name": "Offer Details"
-                      },
-                      "list": [
-                        {
-                          "descriptor": {
-                            "code": "discount-type",
-                            "name": "Discount Type"
-                          },
-                          "value": "PERCENTAGE"
-                        },
-                        {
-                          "descriptor": {
-                            "code": "discount-value",
-                            "name": "Discount Value"
-                          },
-                          "value": "25"
-                        },
-                        {
-                          "descriptor": {
-                            "code": "valid-from",
-                            "name": "Valid From"
-                          },
-                          "value": "2025-09-21T00:00:00Z"
-                        },
-                        {
-                          "descriptor": {
-                            "code": "valid-until",
-                            "name": "Valid Until"
-                          },
-                          "value": "2025-09-22T23:59:59Z"
-                        },
-                        {
-                          "descriptor": {
-                            "code": "min-session-value",
-                            "name": "Minimum Session Value"
-                          },
-                          "value": "50"
-                        },
-                        {
-                          "descriptor": {
-                            "code": "max-discount",
-                            "name": "Maximum Discount"
-                          },
-                          "value": "100"
-                        }
-                      ]
-                    }
-                  ]
-                }
+              "location_ids": [
+                "LOC-DELHI-001"
               ],
               "tags": [
                 {
@@ -277,6 +290,13 @@ The BPP responds with charging stations that include available offers and promot
                     },
                     {
                       "descriptor": {
+                        "name": "Connector Format",
+                        "code": "connector-format"
+                      },
+                      "value": "SOCKET"
+                    },
+                    {
+                      "descriptor": {
                         "name": "Charging Speed",
                         "code": "charging-speed"
                       },
@@ -299,31 +319,232 @@ The BPP responds with charging stations that include available offers and promot
                   ]
                 }
               ]
-            }
-          ],
-          "fulfillments": [
+            },
             {
-              "id": "1",
-              "type": "CHARGING",
-              "stops": [
+              "id": "pe-charging-02",
+              "descriptor": {
+                "name": "EV Charger #1 (AC Fast Charger)",
+                "code": "CHARGER",
+                "short_desc": "Spot Booking"
+              },
+              "price": {
+                "value": "21",
+                "currency": "INR/kWh"
+              },
+              "fulfillment_ids": [
+                "fulfillment-001"
+              ],
+              "location_ids": [
+                "LOC-DELHI-001"
+              ],
+              "tags": [
                 {
-                  "type": "START",
-                  "time": {
-                    "range": {
-                      "start": "2025:09:24:10:00:00",
-                      "end": "2025:09:24:16:00:00"
-                    }
+                  "descriptor": {
+                    "code": "connector-specifications",
+                    "name": "Connector Specifications"
                   },
-                  "location": {
-                    "gps": "28.345345,77.389754",
-                    "descriptor": {
-                      "name": "BlueCharge Connaught Place Station"
+                  "list": [
+                    {
+                      "descriptor": {
+                        "name": "connector Id",
+                        "code": "connector-id"
+                      },
+                      "value": "1"
                     },
-                    "address": "Connaught Place, New Delhi"
+                    {
+                      "descriptor": {
+                        "name": "Power Type",
+                        "code": "power-type"
+                      },
+                      "value": "AC_3_PHASE"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Type",
+                        "code": "connector-type"
+                      },
+                      "value": "CCS2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Format",
+                        "code": "connector-format"
+                      },
+                      "value": "SOCKET"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Charging Speed",
+                        "code": "charging-speed"
+                      },
+                      "value": "FAST"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Rating",
+                        "code": "power-rating"
+                      },
+                      "value": "30kW"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Status",
+                        "code": "status"
+                      },
+                      "value": "Available"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "pe-charging-02",
+              "descriptor": {
+                "name": "EV Charger #2 (DC Fast Charger)",
+                "code": "CHARGER"
+              },
+              "price": {
+                "value": "25",
+                "currency": "INR/kWh"
+              },
+              "fulfillment_ids": [
+                "fulfillment-002"
+              ],
+              "location_ids": [
+                "LOC-DELHI-002"
+              ],
+              "tags": [
+                {
+                  "descriptor": {
+                    "name": "Connector Specifications"
                   },
-                  "instructions": {
-                    "short_desc": "Ground floor, Pillar Number 4"
-                  }
+                  "list": [
+                    {
+                      "descriptor": {
+                        "name": "connector ID",
+                        "code": "connector-id"
+                      },
+                      "value": "2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Type",
+                        "code": "power-type"
+                      },
+                      "value": "DC"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Type",
+                        "code": "connector-type"
+                      },
+                      "value": "CCS2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Format",
+                        "code": "connector-format"
+                      },
+                      "value": "CABLE"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Charging Speed",
+                        "code": "charging-speed"
+                      },
+                      "value": "FAST"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Rating",
+                        "code": "power-rating"
+                      },
+                      "value": "40kW"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Status",
+                        "code": "status"
+                      },
+                      "value": "Available"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "pe-charging-02",
+              "descriptor": {
+                "name": "EV Charger #2 (DC Fast Charger)",
+                "code": "CHARGER",
+                "short_desc": "Spot Booking"
+              },
+              "price": {
+                "value": "28",
+                "currency": "INR/kWh"
+              },
+              "fulfillment_ids": [
+                "fulfillment-002"
+              ],
+              "location_ids": [
+                "LOC-DELHI-002"
+              ],
+              "tags": [
+                {
+                  "descriptor": {
+                    "name": "Connector Specifications"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "name": "connector ID",
+                        "code": "connector-id"
+                      },
+                      "value": "2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Type",
+                        "code": "power-type"
+                      },
+                      "value": "DC"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Type",
+                        "code": "connector-type"
+                      },
+                      "value": "CCS2"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Connector Format",
+                        "code": "connector-format"
+                      },
+                      "value": "CABLE"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Charging Speed",
+                        "code": "charging-speed"
+                      },
+                      "value": "FAST"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Power Rating",
+                        "code": "power-rating"
+                      },
+                      "value": "40kW"
+                    },
+                    {
+                      "descriptor": {
+                        "name": "Status",
+                        "code": "status"
+                      },
+                      "value": "Available"
+                    }
+                  ]
                 }
               ]
             }
@@ -334,6 +555,7 @@ The BPP responds with charging stations that include available offers and promot
   }
 }
 ```
+
 
 ### **Select with Offer**
 
@@ -370,7 +592,7 @@ The consumer selects a charging station with a specific offer applied.
       "items": [
         {
           "id": "pe-charging-01",
-          "quantity": {
+	    "quantity": {
             "selected": {
               "measure": {
                 "type": "CONSTANT",
@@ -406,7 +628,28 @@ The consumer selects a charging station with a specific offer applied.
       ],
       "offers": [
         {
-          "id": "weekend-discount-25"
+          "id": "offer-001"
+        }
+      ],
+      "tags": [
+        {
+          "descriptor": {
+            "code": "buyer-finder-fee"
+          },
+          "list": [
+            {
+              "descriptor": {
+                "code": "type"
+              },
+              "value": "PERCENTAGE"
+            },
+            {
+              "descriptor": {
+                "code": "value"
+              },
+              "value": "2"
+            }
+          ]
         }
       ]
     }
@@ -416,7 +659,7 @@ The consumer selects a charging station with a specific offer applied.
 
 ### **on_select with Offer Pricing**
 
-The BPP responds with pricing that includes the applied offer discount.
+<make consistent with RFC style language>The BPP responds with pricing that includes the applied offer discount. The offer discount reflects in the quotation object.
 
 ```json
 {
@@ -438,14 +681,21 @@ The BPP responds with pricing that includes the applied offer discount.
     "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
     "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
     "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
-    "timestamp": "2025:09:24:10:00:30"
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
   },
   "message": {
     "order": {
       "provider": {
         "id": "cpo1.com",
         "descriptor": {
-          "name": "CPO1 EV charging Company"
+          "name": "CPO1 EV charging Company",
+          "short_desc": "CPO1 provides EV charging facility across India",
+          "images": [
+            {
+              "url": "https://cpo1.com/images/logo.png"
+            }
+          ]
         }
       },
       "items": [
@@ -454,25 +704,86 @@ The BPP responds with pricing that includes the applied offer discount.
           "descriptor": {
             "name": "EV Charger #1 (AC Fast Charger)",
             "code": "ev-charger"
+            "short_desc": "Book now"
           },
           "price": {
             "value": "18",
             "currency": "INR/kWh"
           },
-          "quantity": {
-            "selected": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "100",
-                "unit": "INR"
+	    "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
               }
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "connector-specifications",
+                "name": "Connector Specifications"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "name": "connector Id",
+                    "code": "connector-id"
+                  },
+                  "value": "1"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Type",
+                    "code": "power-type"
+                  },
+                  "value": "AC_3_PHASE"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Type",
+                    "code": "connector-type"
+                  },
+                  "value": "CCS2"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Format",
+                    "code": "connector-format"
+                  },
+                  "value": "SOCKET"
+                },
+                {
+                  "descriptor": {
+                    "name": "Charging Speed",
+                    "code": "charging-speed"
+                  },
+                  "value": "FAST"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Rating",
+                    "code": "power-rating"
+                  },
+                  "value": "30kW"
+                },
+                {
+                  "descriptor": {
+                    "name": "Status",
+                    "code": "status"
+                  },
+                  "value": "Available"
+                }
+              ]
             }
-          }
+          ]
         }
       ],
       "fulfillments": [
         {
-          "id": "1",
+          "id": "fulfillment-001",
+          "type": "CHARGING",
           "stops": [
             {
               "type": "START",
@@ -503,18 +814,9 @@ The BPP responds with pricing that includes the applied offer discount.
           }
         }
       ],
-      "offers": [
-        {
-          "id": "weekend-discount-25",
-          "descriptor": {
-            "name": "Weekend Special - 25% Off",
-            "short_desc": "Get 25% off on all charging sessions this weekend"
-          }
-        }
-      ],
       "quote": {
         "price": {
-          "value": "88.50",
+          "value": "82",
           "currency": "INR"
         },
         "breakup": [
@@ -529,24 +831,17 @@ The BPP responds with pricing that includes the applied offer discount.
             }
           },
           {
-            "title": "Service Fee",
+            "title": "service fee",
             "price": {
               "currency": "INR",
               "value": "10"
             }
           },
           {
-            "title": "Weekend Special Offer (25% off)",
+            "title": "offer discount(20%)",
             "price": {
               "currency": "INR",
-              "value": "-22.50"
-            }
-          },
-          {
-            "title": "GST (18%)",
-            "price": {
-              "currency": "INR",
-              "value": "11.50"
+              "value": "18"
             }
           }
         ]
@@ -580,7 +875,7 @@ The consumer initiates the charging session with the selected offer.
     "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
     "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
     "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
-    "timestamp": "2025:09:24:10:10:00",
+    "timestamp": "2023-07-16T04:41:16Z",
     "ttl": "15S"
   },
   "message": {
@@ -591,17 +886,43 @@ The consumer initiates the charging session with the selected offer.
       "items": [
         {
           "id": "pe-charging-01",
-          "quantity": {
-            "selected": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "100",
-                "unit": "INR"
+		"quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
               }
-            }
-          }
+          },
         }
       ],
+      "offers": [
+        {
+          "id": "offer-001"
+        }
+      ],
+      "billing": {
+        "name": "Ravi Kumar",
+        "organization": {
+          "descriptor": {
+            "name": "GreenCharge Pvt Ltd"
+          }
+        },
+        "address": "Apartment 123, MG Road, Bengaluru, Karnataka, 560001, India",
+        "state": {
+          "name": "Karnataka"
+        },
+        "city": {
+          "name": "Bengaluru"
+        },
+        "email": "ravi.kumar@greencharge.com",
+        "phone": "+918765432100",
+        "time": {
+          "timestamp": "2025-07-30T12:02:00Z"
+        },
+        "tax_id": "GSTIN29ABCDE1234F1Z5"
+      },
       "fulfillments": [
         {
           "id": "1",
@@ -609,13 +930,13 @@ The consumer initiates the charging session with the selected offer.
             {
               "type": "START",
               "time": {
-                "timestamp": "2025:09:24:10:00:00"
+                "timestamp": "2025-09-16T10:00:00+05:30"
               }
             },
             {
               "type": "STOP",
               "time": {
-                "timestamp": "2025:09:24:11:00:00"
+                "timestamp": "2025-09-16T11:30:00+05:30"
               }
             }
           ],
@@ -625,28 +946,35 @@ The consumer initiates the charging session with the selected offer.
           },
           "customer": {
             "person": {
-              "name": "Sarah Johnson"
+              "name": "Ravi Kumar"
             },
             "contact": {
-              "phone": "+91-9876543210"
+              "phone": "+91-9887766554"
             }
           }
         }
       ],
-      "offers": [
+      "tags": [
         {
-          "id": "weekend-discount-25"
+          "descriptor": {
+            "code": "buyer-finder-fee"
+          },
+          "list": [
+            {
+              "descriptor": {
+                "code": "type"
+              },
+              "value": "PERCENTAGE"
+            },
+            {
+              "descriptor": {
+                "code": "value"
+              },
+              "value": "2"
+            }
+          ]
         }
-      ],
-      "billing": {
-        "name": "Sarah Johnson",
-        "address": "123 MG Road, Bangalore, Karnataka, 560001, India",
-        "email": "sarah.johnson@email.com",
-        "phone": "+91-9876543210",
-        "time": {
-          "timestamp": "2025:09:24:10:10:00Z"
-        }
-      }
+      ]
     }
   }
 }
@@ -676,14 +1004,21 @@ The BPP confirms the offer application and provides payment details.
     "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
     "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
     "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
-    "timestamp": "2025:09:24:10:10:30"
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "15S"
   },
   "message": {
     "order": {
       "provider": {
         "id": "cpo1.com",
         "descriptor": {
-          "name": "CPO1 EV charging Company"
+          "name": "CPO1 EV charging Company",
+          "short_desc": "CPO1 provides EV charging facility across India",
+          "images": [
+            {
+              "url": "https://cpo1.com/images/logo.png"
+            }
+          ]
         }
       },
       "items": [
@@ -697,25 +1032,85 @@ The BPP confirms the offer application and provides payment details.
             "value": "18",
             "currency": "INR/kWh"
           },
-          "quantity": {
-            "selected": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "100",
-                "unit": "INR"
+	    "quantity": {
+              "selected": {
+                  "measure": {
+                     "type": "CONSTANT",
+                     "value": "100",
+                     "unit": "INR"
+                  }
               }
+          },
+          "tags": [
+            {
+              "descriptor": {
+                "code": "connector-specifications",
+                "name": "Connector Specifications"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "name": "connector Id",
+                    "code": "connector-id"
+                  },
+                  "value": "1"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Type",
+                    "code": "power-type"
+                  },
+                  "value": "AC_3_PHASE"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Type",
+                    "code": "connector-type"
+                  },
+                  "value": "CCS2"
+                },
+                {
+                  "descriptor": {
+                    "name": "Connector Format",
+                    "code": "connector-format"
+                  },
+                  "value": "SOCKET"
+                },
+                {
+                  "descriptor": {
+                    "name": "Charging Speed",
+                    "code": "charging-speed"
+                  },
+                  "value": "FAST"
+                },
+                {
+                  "descriptor": {
+                    "name": "Power Rating",
+                    "code": "power-rating"
+                  },
+                  "value": "30kW"
+                },
+                {
+                  "descriptor": {
+                    "name": "Status",
+                    "code": "status"
+                  },
+                  "value": "Available"
+                }
+              ]
             }
-          }
+          ]
         }
       ],
       "fulfillments": [
         {
-          "id": "1",
+          "id": "fulfillment-001",
+          "type": "CHARGING",
           "stops": [
             {
               "type": "START",
               "time": {
-                "timestamp": "2025:09:24:10:00:00"
+                "timestamp": "2023-07-16T10:00:00+05:30"
               },
               "location": {
                 "gps": "28.345345,77.389754",
@@ -725,8 +1120,11 @@ The BPP confirms the offer application and provides payment details.
                 "address": "Connaught Place, New Delhi"
               },
               "instructions": {
-                "short_desc": "Ground floor, Pillar Number 4"
+                "short_desc": "OTP will be shared to the user's registered number to confirm order"
               }
+              "authorization": {
+                "type": "OTP"
+              },
             },
             {
               "type": "STOP",
@@ -741,66 +1139,17 @@ The BPP confirms the offer application and provides payment details.
           },
           "customer": {
             "person": {
-              "name": "Sarah Johnson"
+              "name": "Ravi Kumar"
             },
             "contact": {
-              "phone": "+91-9876543210"
+              "phone": "+91-9887766554"
             }
           }
         }
       ],
-      "offers": [
-        {
-          "id": "weekend-discount-25",
-          "descriptor": {
-            "name": "Weekend Special - 25% Off",
-            "short_desc": "Get 25% off on all charging sessions this weekend"
-          },
-          "tags": [
-            {
-              "descriptor": {
-                "code": "offer-validation",
-                "name": "Offer Validation"
-              },
-              "list": [
-                {
-                  "descriptor": {
-                    "code": "validated",
-                    "name": "Offer Validated"
-                  },
-                  "value": "true"
-                },
-                {
-                  "descriptor": {
-                    "code": "discount-applied",
-                    "name": "Discount Applied"
-                  },
-                  "value": "22.50"
-                },
-                {
-                  "descriptor": {
-                    "code": "offer-code",
-                    "name": "Offer Code"
-                  },
-                  "value": "WEEKEND25"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "billing": {
-        "name": "Sarah Johnson",
-        "address": "123 MG Road, Bangalore, Karnataka, 560001, India",
-        "email": "sarah.johnson@email.com",
-        "phone": "+91-9876543210",
-        "time": {
-          "timestamp": "2025:09:24:10:10:00Z"
-        }
-      },
       "quote": {
         "price": {
-          "value": "88.50",
+          "value": "82",
           "currency": "INR"
         },
         "breakup": [
@@ -815,309 +1164,121 @@ The BPP confirms the offer application and provides payment details.
             }
           },
           {
-            "title": "Service Fee",
+            "title": "Service fee",
             "price": {
               "currency": "INR",
               "value": "10"
             }
           },
           {
-            "title": "Weekend Special Offer (25% off)",
+            "title": "offer discount(20%)",
             "price": {
               "currency": "INR",
-              "value": "-22.50"
-            }
-          },
-          {
-            "title": "GST (18%)",
-            "price": {
-              "currency": "INR",
-              "value": "11.50"
+              "value": "18"
             }
           }
         ]
       },
+      "billing": {
+        "name": "Ravi Kumar",
+        "organization": {
+          "descriptor": {
+            "name": "GreenCharge Pvt Ltd"
+          }
+        },
+        "address": "Apartment 123, MG Road, Bengaluru, Karnataka, 560001, India",
+        "state": {
+          "name": "Karnataka"
+        },
+        "city": {
+          "name": "Bengaluru"
+        },
+        "email": "ravi.kumar@greencharge.com",
+        "phone": "+918765432100",
+        "time": {
+          "timestamp": "2025-07-30T12:02:00Z"
+        },
+        "tax_id": "GSTIN29ABCDE1234F1Z5"
+      },
       "payments": [
         {
-          "id": "payment-001",
+          "id": "payment-123e4567-e89b-12d3-a456-426614174000",
           "collected_by": "BPP",
-          "url": "https://payments.cpo1.com/pay?transaction_id=$transaction_id&amount=$amount",
+          "url": "https://payments.bluechargenet-aggregator.io/pay?transaction_id=$transaction_id&amount=$amount",
           "params": {
-            "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
-            "amount": "88.50",
-            "currency": "INR"
+            "amount": "82.00",
+            "currency": "INR",
+            "bank_code": "HDFC000123",
+            "bank_account_number": "1131324242424"
           },
           "type": "PRE-FULFILLMENT",
-          "status": "NOT-PAID"
-        }
-      ]
-    }
-  }
-}
-```
-
-### **Session Completion with Offer Details**
-
-The final session update includes detailed offer application and savings information.
-
-```json
-{
-  "context": {
-    "domain": "deg:ev-charging",
-    "action": "on_update",
-    "location": {
-      "country": {
-        "code": "IND"
-      },
-      "city": {
-        "code": "std:080"
-      }
-    },
-    "version": "1.1.0",
-    "bap_id": "example-bap.com",
-    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
-    "bpp_id": "example-bpp.com",
-    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
-    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
-    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
-    "timestamp": "2025:09:24:11:05:00",
-    "ttl": "15S"
-  },
-  "message": {
-    "order": {
-      "id": "order-001",
-      "provider": {
-        "id": "cpo1.com",
-        "descriptor": {
-          "name": "CPO1 EV charging Company"
-        }
-      },
-      "items": [
-        {
-          "id": "pe-charging-01",
-          "descriptor": {
-            "name": "EV Charger #1 (AC Fast Charger)",
-            "code": "ev-charger"
-          },
-          "price": {
-            "value": "18",
-            "currency": "INR/kWh"
-          },
-          "quantity": {
-            "selected": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "100",
-                "unit": "INR"
-              }
-            },
-            "allocated": {
-              "measure": {
-                "type": "CONSTANT",
-                "value": "5.2",
-                "unit": "kWh"
-              }
-            }
-          }
-        }
-      ],
-      "fulfillments": [
-        {
-          "id": "1",
-          "type": "CHARGING",
-          "state": {
-            "descriptor": {
-              "code": "COMPLETED",
-              "name": "Charging completed"
-            },
-            "updated_at": "2025:09:24:11:05:00Z",
-            "updated_by": "charging-system"
-          },
-          "stops": [
-            {
-              "type": "START",
-              "time": {
-                "timestamp": "2025:09:24:10:00:00+05:30"
-              },
-              "location": {
-                "gps": "28.345345,77.389754",
-                "descriptor": {
-                  "name": "BlueCharge Connaught Place Station"
-                },
-                "address": "Connaught Place, New Delhi"
-              }
-            },
-            {
-              "type": "END",
-              "time": {
-                "timestamp": "2025:09:24:11:00:00+05:30"
-              },
-              "location": {
-                "gps": "28.345345,77.389754",
-                "descriptor": {
-                  "name": "BlueCharge Connaught Place Station"
-                },
-                "address": "Connaught Place, New Delhi"
-              }
-            }
-          ],
-          "vehicle": {
-            "make": "Tata",
-            "model": "Nexon EV"
-          },
-          "customer": {
-            "person": {
-              "name": "Sarah Johnson"
-            },
-            "contact": {
-              "phone": "+91-9876543210"
-            }
-          }
-        }
-      ],
-      "offers": [
-        {
-          "id": "weekend-discount-25",
-          "descriptor": {
-            "name": "Weekend Special - 25% Off",
-            "short_desc": "Get 25% off on all charging sessions this weekend"
+          "status": "NOT-PAID",
+          "time": {
+            "timestamp": "2025-07-30T14:59:00Z"
           },
           "tags": [
             {
               "descriptor": {
-                "code": "offer-usage",
-                "name": "Offer Usage Details"
+                "code": "payment-methods"
               },
               "list": [
                 {
                   "descriptor": {
-                    "code": "offer-applied",
-                    "name": "Offer Applied"
-                  },
-                  "value": "true"
+                    "code": "BANK-TRANSFER",
+                    "short_desc": "Pay by transferring to a bank account"
+                  }
                 },
                 {
                   "descriptor": {
-                    "code": "discount-amount",
-                    "name": "Discount Amount"
-                  },
-                  "value": "23.40"
+                    "code": "PAYMENT-LINK",
+                    "short_desc": "Pay through a bank link received"
+                  }
                 },
                 {
                   "descriptor": {
-                    "code": "savings-percentage",
-                    "name": "Savings Percentage"
-                  },
-                  "value": "25"
-                },
-                {
-                  "descriptor": {
-                    "code": "offer-code-used",
-                    "name": "Offer Code Used"
-                  },
-                  "value": "WEEKEND25"
+                    "code": "UPI-TRANSFER",
+                    "short_desc": "Pay by setting a UPI mandate"
+                  }
                 }
               ]
             }
           ]
         }
       ],
-      "billing": {
-        "name": "Sarah Johnson",
-        "address": "123 MG Road, Bangalore, Karnataka, 560001, India",
-        "email": "sarah.johnson@email.com",
-        "phone": "+91-9876543210",
-        "time": {
-          "timestamp": "2025:09:24:10:10:00Z"
-        }
-      },
-      "quote": {
-        "price": {
-          "value": "91.80",
-          "currency": "INR"
+      "refund_terms": [
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Order Confirmed",
+              "code": "CONFIRMED",
+              "long_desc": "85% refund available if cancelled at least 4 hours before the scheduled charging time"
+            }
+          },
+          "refund_eligible": true,
+          "refund_within": {
+            "duration": "PT2H"
+          },
+          "refund_amount": {
+            "currency": "INR",
+            "value": "65"
+          }
         },
-        "breakup": [
-          {
-            "title": "Charging session cost (5.2 kWh @ ₹18.00/kWh)",
-            "item": {
-              "id": "pe-charging-01"
-            },
-            "price": {
-              "value": "93.60",
-              "currency": "INR"
-            }
-          },
-          {
-            "title": "Service Fee",
-            "price": {
-              "currency": "INR",
-              "value": "10"
-            }
-          },
-          {
-            "title": "Weekend Special Offer (25% off)",
-            "price": {
-              "currency": "INR",
-              "value": "-23.40"
-            }
-          },
-          {
-            "title": "GST (18%)",
-            "price": {
-              "currency": "INR",
-              "value": "11.60"
-            }
-          }
-        ]
-      },
-      "payments": [
         {
-          "id": "payment-001",
-          "collected_by": "BPP",
-          "type": "PRE-FULFILLMENT",
-          "status": "PAID",
-          "params": {
-            "transaction_id": "txn-001",
-            "amount": "91.80",
-            "currency": "INR"
-          }
-        }
-      ],
-      "tags": [
-        {
-          "descriptor": {
-            "code": "offer-summary",
-            "name": "Offer Summary"
-          },
-          "list": [
-            {
-              "descriptor": {
-                "code": "total-savings",
-                "name": "Total Savings"
-              },
-              "value": "₹23.40"
-            },
-            {
-              "descriptor": {
-                "code": "offer-type",
-                "name": "Offer Type"
-              },
-              "value": "WEEKEND_SPECIAL"
-            },
-            {
-              "descriptor": {
-                "code": "next-offer",
-                "name": "Next Available Offer"
-              },
-              "value": "Holiday Special - 30% off (Dec 25-31)"
+          "fulfillment_state": {
+            "descriptor": {
+              "name": "Charging Active",
+              "code": "ACTIVE"
             }
-          ]
+          },
+          "refund_eligible": false
         }
       ]
     }
   }
 }
 ```
+
+Rest of the flow would be the same as other use cases.
 
 ## **Implementation Guidelines**
 
