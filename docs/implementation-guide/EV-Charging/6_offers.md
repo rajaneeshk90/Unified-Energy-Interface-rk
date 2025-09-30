@@ -2,7 +2,7 @@
 
 This section covers promotional offers and discounts that can be applied to EV charging sessions, including time-based promotions, loyalty discounts, and special pricing schemes.
 
-> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md#general-beckn-message-flow-and-error-handling) section.
+> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md) section.
 
 ## **Offer Types**
 

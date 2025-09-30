@@ -2,7 +2,7 @@
 
 This section covers B2B (Business-to-Business) charging scenarios where fleet operators and corporate customers have pre-negotiated commercial agreements with Charge Point Operators for preferential pricing and terms.
 
-> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md#general-beckn-message-flow-and-error-handling) section.
+> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md) section.
 
 ## **B2B Deal Scenarios**
 

@@ -2,7 +2,7 @@
 
 This section covers scenarios where charging sessions are interrupted or experience connectivity issues, leading to billing adjustments for actual energy delivered versus what was initially estimated or prepaid.
 
-> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md#general-beckn-message-flow-and-error-handling) section.
+> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md) section.
 
 ## **Under and Overcharge Scenarios**
 

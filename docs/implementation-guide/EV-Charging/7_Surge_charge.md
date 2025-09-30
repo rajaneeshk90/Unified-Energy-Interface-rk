@@ -2,7 +2,7 @@
 
 This section covers surge charge scenarios where additional fees are applied to EV charging sessions based on various factors such as peak demand, location, time of day, or special circumstances.
 
-> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md#general-beckn-message-flow-and-error-handling) section.
+> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md) section.
 
 A surge price is an additional fee applied on top of the base charging tariff under specific conditions-such as time of use or location.
 

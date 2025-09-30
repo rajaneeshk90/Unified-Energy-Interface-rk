@@ -2,7 +2,7 @@
 
 This section covers the discovery and subscription process for loyalty programs offered by charging providers, enabling users to access preferential pricing and exclusive benefits.
 
-> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md#general-beckn-message-flow-and-error-handling) section.
+> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md) section.
 
 ## **User journey**
 

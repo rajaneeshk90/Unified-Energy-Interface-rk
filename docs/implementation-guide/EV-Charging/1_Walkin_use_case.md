@@ -2,7 +2,7 @@
 
 This section covers a walk-in case where users discover the charger using third-party apps, word of mouth, or Beckn API, and then drive to the location without advance booking.
 
-> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md#general-beckn-message-flow-and-error-handling) section.
+> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md) section.
 
 ## **Technical Implementation Perspective**
 

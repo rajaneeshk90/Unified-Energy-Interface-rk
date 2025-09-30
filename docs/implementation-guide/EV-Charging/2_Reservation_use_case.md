@@ -2,7 +2,7 @@
 
 This section covers advance reservation of a charging slot where users discover and book a charger before driving to the location.
 
-> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md#general-beckn-message-flow-and-error-handling) section.
+> **Note**: For general Beckn message flow and error handling, please refer to the [Overview](./0_Overview.md) section.
 
 ## **User journey**
 
