@@ -1,0 +1,128 @@
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_track",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "2.0.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "e0a38442-69b7-4698-aa94-a1b6b5d244c2",
+    "message_id": "6ace310b-6440-4421-a2ed-b484c7548bd5",
+    "timestamp": "2023-02-18T17:00:40.065Z",
+    "ttl": "PT10M",
+    "network_id": [
+      "beckn.energy.india"
+    ],
+    "schema_context": [
+      "https://becknprotocol.io/schemas/core/v2/Order/schema-context.jsonld",
+      "https://becknprotocol.io/schemas/energy/v1/ev-charging-context.jsonld",
+      "https://schema.org"
+    ]
+  },
+  "message": {
+    "order": {
+      "@context": "https://becknprotocol.io/schemas/core/v2/Order/schema-context.jsonld",
+      "@type": "beckn:Order",
+      "beckn:id": "b989c9a9-f603-4d44-b38d-26fd72286b38",
+      "beckn:state": "ACTIVE",
+      "beckn:orderNumber": "ORD-b989c9a9",
+      "beckn:seller": "cpo1.com",
+      "beckn:buyer": "customer-001",
+      "beckn:orderItems": [
+        {
+          "beckn:lineId": "line-001",
+          "beckn:orderedItem": "pe-charging-01",
+          "beckn:quantity": 100,
+          "beckn:orderItemAttributes": {
+            "real-time-metrics": {
+              "energy-delivered": "3.2",
+              "energy-unit": "kWh",
+              "current-power": "30",
+              "power-unit": "kW",
+              "session-duration": "PT6M24S",
+              "estimated-completion": "PT23M36S"
+            }
+          }
+        }
+      ],
+      "beckn:fulfillment": "fulfillment-001",
+      "beckn:totals": {
+        "@type": "schema:PriceSpecification",
+        "schema:priceCurrency": "INR",
+        "schema:price": 57.6,
+        "beckn:breakup": [
+          {
+            "schema:name": "Charging cost so far (3.2 kWh @ ₹18.00/kWh)",
+            "beckn:itemId": "pe-charging-01",
+            "schema:price": 57.6,
+            "schema:priceCurrency": "INR"
+          }
+        ]
+      },
+      "beckn:orderAttributes": {
+        "tracking-details": {
+          "beckn:id": "TRACK-SESSION-9876543210",
+          "beckn:url": "https://track.bluechargenet-aggregator.io/session/SESSION-9876543210",
+          "beckn:status": "ACTIVE",
+          "live-updates": {
+            "update-frequency": "PT30S",
+            "next-update-at": "2023-02-18T17:01:10.065Z"
+          }
+        },
+        "fulfillment-details": {
+          "beckn:id": "fulfillment-001",
+          "beckn:mode": "RESERVATION",
+          "beckn:status": "ACTIVE",
+          "state": {
+            "code": "CHARGING-IN-PROGRESS",
+            "name": "Charging Active",
+            "updated-at": "2023-02-18T17:00:40.065Z",
+            "updated-by": "bluechargenet-aggregator.io"
+          },
+          "real-time-data": {
+            "charging-speed": "FAST",
+            "battery-level": "45%",
+            "estimated-full-charge": "2023-02-18T17:24:16.065Z",
+            "connector-temperature": "32°C",
+            "vehicle-status": "CONNECTED"
+          },
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2023-02-18T16:54:16.065Z"
+              },
+              "location": {
+                "schema:geo": {
+                  "@type": "schema:GeoCoordinates",
+                  "schema:latitude": "28.345345",
+                  "schema:longitude": "77.389754"
+                },
+                "schema:name": "BlueCharge Connaught Place Station",
+                "schema:address": {
+                  "@type": "schema:PostalAddress",
+                  "schema:addressLocality": "Connaught Place, New Delhi"
+                }
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV",
+            "registration": "DL-01-XX-1234"
+          }
+        },
+        "fulfillment-type": "CHARGING"
+      }
+    }
+  }
+}

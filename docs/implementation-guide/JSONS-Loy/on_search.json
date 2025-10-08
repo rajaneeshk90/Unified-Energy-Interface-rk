@@ -1,0 +1,228 @@
+{
+    "context": {
+        "domain": "deg:ev-charging",
+        "action": "on_search",
+        "location": {
+            "country": {
+                "code": "IND"
+            },
+            "city": {
+                "code": "std:080"
+            }
+        },
+        "version": "1.1.0",
+        "bap_id": "example-bap.com",
+        "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+        "bpp_id": "example-bpp.com",
+        "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+        "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+        "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+        "timestamp": "2023-07-16T04:41:16Z"
+    },
+    "message": {
+        "catalog": {
+            "providers": [
+                {
+                    "id": "cpo1.com",
+                    "descriptor": {
+                        "name": "CPO1 EV Charging Company",
+                        "short_desc": "Premium EV charging network across India",
+                        "images": [
+                            {
+                                "url": "https://cpo1.com/images/logo.png"
+                            }
+                        ]
+                    },
+                    "categories": [
+                        {
+                            "id": "loyalty-programs",
+                            "descriptor": {
+                                "code": "loyalty-program",
+                                "name": "Loyalty Programs"
+                            }
+                        }
+                    ],
+                    "items": [
+                        {
+                            "id": "loyalty-gold-pass",
+                            "descriptor": {
+                                "name": "CPO Gold Pass",
+                                "code": "loyalty-subscription",
+                                "short_desc": "Premium loyalty program with exclusive benefits",
+                                "long_desc": "Get 10% discount on weekday charging, idle fee waiver up to 15 minutes, priority access to charging slots, and dedicated customer support.",
+                                "additional_desc": {
+                                    "url": "https://example-bpp.com/gold-pass.html",
+                                    "content-type": "text/html"
+                                },
+                                "images": [
+                                    {
+                                        "url": "https://cpo1.com/images/gold-pass.png"
+                                    }
+                                ]
+                            },
+                            "price": {
+                                "value": "299",
+                                "currency": "INR"
+                            },
+                            "category_ids": [
+                                "loyalty-programs"
+                            ],
+                            "tags": [
+                                {
+                                    "descriptor": {
+                                        "code": "loyalty-benefits",
+                                        "name": "Program Benefits"
+                                    },
+                                    "list": [
+                                        {
+                                            "descriptor": {
+                                                "code": "weekday-discount",
+                                                "name": "Weekday Discount"
+                                            },
+                                            "value": "10%"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "idle-fee-waiver",
+                                                "name": "Idle Fee Waiver"
+                                            },
+                                            "value": "15 minutes"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "priority-access",
+                                                "name": "Priority Access"
+                                            },
+                                            "value": "true"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "subscription-details",
+                                        "name": "Subscription Details"
+                                    },
+                                    "list": [
+                                        {
+                                            "descriptor": {
+                                                "code": "validity-period",
+                                                "name": "Validity Period"
+                                            },
+                                            "value": "30 days"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "tier-level",
+                                                "name": "Tier Level"
+                                            },
+                                            "value": "Gold"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "auto-renewal",
+                                                "name": "Auto Renewal"
+                                            },
+                                            "value": "optional"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "loyalty-platinum-pass",
+                            "descriptor": {
+                                "name": "CPO Platinum Pass",
+                                "code": "loyalty-subscription",
+                                "short_desc": "Ultimate loyalty program with maximum savings",
+                                "long_desc": "Enjoy 15% discount on all charging sessions, idle fee waiver up to 30 minutes, guaranteed slot availability, premium customer support, and exclusive access to new stations.",
+                                "additional_desc": {
+                                    "url": "https://example-bpp.com/platinum-pass.html",
+                                    "content-type": "text/html"
+                                },
+                                "images": [
+                                    {
+                                        "url": "https://cpo1.com/images/platinum-pass.png"
+                                    }
+                                ]
+                            },
+                            "price": {
+                                "value": "499",
+                                "currency": "INR"
+                            },
+                            "category_ids": [
+                                "loyalty-programs"
+                            ],
+                            "tags": [
+                                {
+                                    "descriptor": {
+                                        "code": "loyalty-benefits",
+                                        "name": "Program Benefits"
+                                    },
+                                    "list": [
+                                        {
+                                            "descriptor": {
+                                                "code": "all-time-discount",
+                                                "name": "All Time Discount"
+                                            },
+                                            "value": "15%"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "idle-fee-waiver",
+                                                "name": "Idle Fee Waiver"
+                                            },
+                                            "value": "30 minutes"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "guaranteed-availability",
+                                                "name": "Guaranteed Slot Availability"
+                                            },
+                                            "value": "true"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "premium-support",
+                                                "name": "Premium Customer Support"
+                                            },
+                                            "value": "24/7"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "subscription-details",
+                                        "name": "Subscription Details"
+                                    },
+                                    "list": [
+                                        {
+                                            "descriptor": {
+                                                "code": "validity-period",
+                                                "name": "Validity Period"
+                                            },
+                                            "value": "30 days"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "tier-level",
+                                                "name": "Tier Level"
+                                            },
+                                            "value": "Platinum"
+                                        },
+                                        {
+                                            "descriptor": {
+                                                "code": "auto-renewal",
+                                                "name": "Auto Renewal"
+                                            },
+                                            "value": "recommended"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

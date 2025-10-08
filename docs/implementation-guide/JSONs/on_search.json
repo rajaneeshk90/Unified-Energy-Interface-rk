@@ -1,0 +1,418 @@
+{
+    "context": {
+      "domain": "deg:ev-charging",
+      "action": "on_search",
+      "location": {
+        "country": {
+          "code": "IND"
+        },
+        "city": {
+          "code": "std:080"
+        }
+      },
+      "version": "1.1.0",
+      "bap_id": "example-bap.com",
+      "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+      "bpp_id": "example-bpp.com",
+      "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+      "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+      "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+      "timestamp": "2023-07-16T04:41:16Z"
+    },
+    "message": {
+      "catalog": {
+        "providers": [
+          {
+            "id": "cpo1.com",
+            "descriptor": {
+              "name": "CPO1 EV charging Company",
+              "short_desc": "CPO1 provides EV charging facility across India",
+              "images": [
+                {
+                  "url": "https://cpo1.com/images/logo.png"
+                }
+              ]
+            },
+            "locations": [
+              {
+                "id": "LOC-DELHI-001",
+                "gps": "28.345345,77.389754",
+                "descriptor": {
+                  "name": "BlueCharge Connaught Place Station"
+                },
+                "address": "Connaught Place, New Delhi"
+              }
+            ],
+            "fulfillments": [
+              {
+                "id": "fulfillment-001",
+                "type": "CHARGING",
+                "stops": [
+                  {
+                    "location": {
+                      "gps": "28.6304,77.2177",
+                      "address": "Connaught Place, New Delhi"
+                    },
+                    "time": {
+                      "range": {
+                        "start": "2025:09:24:10:00:00",
+                        "end": "2025:09:24:11:00:00"
+                      }
+                    }
+                  },
+                  {
+                    "location": {
+                      "gps": "28.6304,77.2177",
+                      "address": "Connaught Place, New Delhi"
+                    },
+                    "time": {
+                      "range": {
+                        "start": "2025:09:24:12:00:00",
+                        "end": "2025:09:24:13:00:00"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "fulfillment-002",
+                "type": "CHARGING",
+                "stops": [
+                  {
+                    "location": {
+                      "gps": "28.6310,77.2200",
+                      "address": "Saket, New Delhi"
+                    },
+                    "time": {
+                      "range": {
+                        "start": "2025:09:24:11:00:00",
+                        "end": "2025:09:24:12:00:00"
+                      }
+                    }
+                  },
+                  {
+                    "location": {
+                      "gps": "28.6310,77.2200",
+                      "address": "Saket, New Delhi"
+                    },
+                    "time": {
+                      "range": {
+                        "start": "2025:09:24:15:00:00",
+                        "end": "2025:09:24:16:00:00"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "items": [
+              {
+                "id": "pe-charging-01",
+                "descriptor": {
+                  "name": "EV Charger #1 (AC Fast Charger)",
+                  "code": "CHARGER"
+                },
+                "price": {
+                  "value": "18",
+                  "currency": "INR/kWh"
+                },
+                "fulfillment_ids": [
+                  "fulfillment-001"
+                ],
+                "location_ids": [
+                  "LOC-DELHI-001"
+                ],
+                "tags": [
+                  {
+                    "descriptor": {
+                      "code": "connector-specifications",
+                      "name": "Connector Specifications"
+                    },
+                    "list": [
+                      {
+                        "descriptor": {
+                          "name": "connector Id",
+                          "code": "connector-id"
+                        },
+                        "value": "1"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Power Type",
+                          "code": "power-type"
+                        },
+                        "value": "AC_3_PHASE"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Connector Type",
+                          "code": "connector-type"
+                        },
+                        "value": "CCS2"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Connector Format",
+                          "code": "connector-format"
+                        },
+                        "value": "SOCKET"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Charging Speed",
+                          "code": "charging-speed"
+                        },
+                        "value": "FAST"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Power Rating",
+                          "code": "power-rating"
+                        },
+                        "value": "30kW"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Status",
+                          "code": "status"
+                        },
+                        "value": "Available"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "pe-charging-02",
+                "descriptor": {
+                  "name": "EV Charger #1 (AC Fast Charger)",
+                  "code": "CHARGER",
+                  "short_desc": "Spot Booking"
+                },
+                "price": {
+                  "value": "21",
+                  "currency": "INR/kWh"
+                },
+                "fulfillment_ids": [
+                  "fulfillment-001"
+                ],
+                "location_ids": [
+                  "LOC-DELHI-001"
+                ],
+                "tags": [
+                  {
+                    "descriptor": {
+                      "code": "connector-specifications",
+                      "name": "Connector Specifications"
+                    },
+                    "list": [
+                      {
+                        "descriptor": {
+                          "name": "connector Id",
+                          "code": "connector-id"
+                        },
+                        "value": "1"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Power Type",
+                          "code": "power-type"
+                        },
+                        "value": "AC_3_PHASE"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Connector Type",
+                          "code": "connector-type"
+                        },
+                        "value": "CCS2"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Connector Format",
+                          "code": "connector-format"
+                        },
+                        "value": "SOCKET"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Charging Speed",
+                          "code": "charging-speed"
+                        },
+                        "value": "FAST"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Power Rating",
+                          "code": "power-rating"
+                        },
+                        "value": "30kW"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Status",
+                          "code": "status"
+                        },
+                        "value": "Available"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "pe-charging-02",
+                "descriptor": {
+                  "name": "EV Charger #2 (DC Fast Charger)",
+                  "code": "CHARGER"
+                },
+                "price": {
+                  "value": "25",
+                  "currency": "INR/kWh"
+                },
+                "fulfillment_ids": [
+                  "fulfillment-002"
+                ],
+                "location_ids": [
+                  "LOC-DELHI-002"
+                ],
+                "tags": [
+                  {
+                    "descriptor": {
+                      "name": "Connector Specifications"
+                    },
+                    "list": [
+                      {
+                        "descriptor": {
+                          "name": "connector ID",
+                          "code": "connector-id"
+                        },
+                        "value": "2"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Power Type",
+                          "code": "power-type"
+                        },
+                        "value": "DC"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Connector Type",
+                          "code": "connector-type"
+                        },
+                        "value": "CCS2"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Connector Format",
+                          "code": "connector-format"
+                        },
+                        "value": "CABLE"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Charging Speed",
+                          "code": "charging-speed"
+                        },
+                        "value": "FAST"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Power Rating",
+                          "code": "power-rating"
+                        },
+                        "value": "40kW"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Status",
+                          "code": "status"
+                        },
+                        "value": "Available"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "pe-charging-02",
+                "descriptor": {
+                  "name": "EV Charger #2 (DC Fast Charger)",
+                  "code": "CHARGER",
+                  "short_desc": "Spot Booking"
+                },
+                "price": {
+                  "value": "28",
+                  "currency": "INR/kWh"
+                },
+                "fulfillment_ids": [
+                  "fulfillment-002"
+                ],
+                "location_ids": [
+                  "LOC-DELHI-002"
+                ],
+                "tags": [
+                  {
+                    "descriptor": {
+                      "name": "Connector Specifications"
+                    },
+                    "list": [
+                      {
+                        "descriptor": {
+                          "name": "connector ID",
+                          "code": "connector-id"
+                        },
+                        "value": "2"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Power Type",
+                          "code": "power-type"
+                        },
+                        "value": "DC"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Connector Type",
+                          "code": "connector-type"
+                        },
+                        "value": "CCS2"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Connector Format",
+                          "code": "connector-format"
+                        },
+                        "value": "CABLE"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Charging Speed",
+                          "code": "charging-speed"
+                        },
+                        "value": "FAST"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Power Rating",
+                          "code": "power-rating"
+                        },
+                        "value": "40kW"
+                      },
+                      {
+                        "descriptor": {
+                          "name": "Status",
+                          "code": "status"
+                        },
+                        "value": "Available"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }

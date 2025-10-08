@@ -1,0 +1,5 @@
+https://becknprotocol.io/schemas/core/v1/Catalog/schema-context.jsonld
+https://becknprotocol.io/schemas/core/v1/Item/schema-context.jsonld
+https://becknprotocol.io/schemas/core/v1/Offer/schema-context.jsonld
+https://example.org/schema/items/v1/ElectronicItem/schema-context.jsonld
+https://example.org/schema/items/v1/GroceryItem/schema-context.jsonld

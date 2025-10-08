@@ -1,0 +1,27 @@
+{
+    "context": {
+        "domain": "deg:ev-charging",
+        "action": "track",
+        "location": {
+            "city": {
+                "code": "std:080"
+            },
+            "country": {
+                "code": "IND"
+            }
+        },
+        "bap_id": "example-bap.com",
+        "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+        "bpp_id": "example-bpp.com",
+        "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+        "transaction_id": "e0a38442-69b7-4698-aa94-a1b6b5d244c2",
+        "message_id": "6ace310b-6440-4421-a2ed-b484c7548bd5",
+        "timestamp": "2023-02-18T17:00:40.065Z",
+        "version": "1.0.0",
+        "ttl": "PT10M"
+    },
+    "message": {
+        "order_id": "b989c9a9-f603-4d44-b38d-26fd72286b38",
+        "callback_url": "https://example-bap-url.com/SESSION/5e4f"
+    }
+}

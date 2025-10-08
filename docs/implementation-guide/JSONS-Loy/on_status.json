@@ -1,0 +1,235 @@
+{
+    "context": {
+        "domain": "deg:ev-charging",
+        "action": "on_status",
+        "location": {
+            "country": {
+                "code": "IND"
+            },
+            "city": {
+                "code": "std:080"
+            }
+        },
+        "version": "1.1.0",
+        "bap_id": "example-bap.com",
+        "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+        "bpp_id": "example-bpp.com",
+        "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+        "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+        "message_id": "on-status-loyalty-msg-001",
+        "timestamp": "2025:09:30:14:20:00"
+    },
+    "message": {
+        "order": {
+            "id": "loyalty-order-001",
+            "status": "ACTIVE",
+            "provider": {
+                "id": "cpo1.com",
+                "descriptor": {
+                    "name": "CPO1 EV charging Company"
+                }
+            },
+            "items": [
+                {
+                    "id": "loyalty-gold-pass",
+                    "descriptor": {
+                        "name": "CPO Gold Pass",
+                        "code": "loyalty-subscription"
+                    },
+                    "price": {
+                        "value": "299",
+                        "currency": "INR"
+                    },
+                    "tags": [
+                        {
+                            "descriptor": {
+                                "code": "loyalty-membership",
+                                "name": "Loyalty Membership Details"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "membership-id",
+                                        "name": "Membership ID"
+                                    },
+                                    "value": "GOLD-MEMBER-001"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "tier-level",
+                                        "name": "Current Tier"
+                                    },
+                                    "value": "Gold"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "validity-remaining",
+                                        "name": "Days Remaining"
+                                    },
+                                    "value": "24"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "next-renewal",
+                                        "name": "Next Renewal Date"
+                                    },
+                                    "value": "2025:10:24:10:15:00"
+                                }
+                            ]
+                        },
+                        {
+                            "descriptor": {
+                                "code": "usage-statistics",
+                                "name": "Usage Statistics"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "charging-sessions",
+                                        "name": "Charging Sessions This Month"
+                                    },
+                                    "value": "5"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "total-savings",
+                                        "name": "Total Savings This Month"
+                                    },
+                                    "value": "₹85"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "idle-fee-waivers-used",
+                                        "name": "Idle Fee Waivers Used"
+                                    },
+                                    "value": "3"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "priority-slots-used",
+                                        "name": "Priority Slots Used"
+                                    },
+                                    "value": "2"
+                                }
+                            ]
+                        },
+                        {
+                            "descriptor": {
+                                "code": "tier-progress",
+                                "name": "Tier Upgrade Progress"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "current-spend",
+                                        "name": "Current Month Spend"
+                                    },
+                                    "value": "₹450"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "platinum-threshold",
+                                        "name": "Spend for Platinum Upgrade"
+                                    },
+                                    "value": "₹550"
+                                },
+                                {
+                                    "descriptor": {
+                                        "code": "progress-percentage",
+                                        "name": "Progress to Next Tier"
+                                    },
+                                    "value": "82%"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "fulfillments": [
+                {
+                    "id": "fulfillment-002",
+                    "type": "DIGITAL",
+                    "state": {
+                        "descriptor": {
+                            "code": "ACTIVE",
+                            "name": "Loyalty Program Active"
+                        }
+                    },
+                    "stops": [
+                        {
+                            "type": "START",
+                            "time": {
+                                "timestamp": "2025:09:24:10:15:30"
+                            }
+                        }
+                    ],
+                    "customer": {
+                        "person": {
+                            "name": "Kavya Nair"
+                        },
+                        "contact": {
+                            "phone": "+91-9876543210",
+                            "email": "kavya.nair@email.com"
+                        }
+                    }
+                }
+            ],
+            "billing": {
+                "name": "Kavya Nair",
+                "phone": "+91-9876543210",
+                "email": "kavya.nair@email.com",
+                "address": "123 MG Road, Indiranagar, Bengaluru, Karnataka 560038"
+            },
+            "quote": {
+                "price": {
+                    "value": "299",
+                    "currency": "INR"
+                },
+                "breakup": [
+                    {
+                        "item": {
+                            "id": "loyalty-gold-pass"
+                        },
+                        "title": "Loyalty Subscription",
+                        "price": {
+                            "value": "299",
+                            "currency": "INR"
+                        }
+                    }
+                ]
+            },
+            "payments": [
+                {
+                    "id": "payment-001",
+                    "type": "PRE-ORDER",
+                    "status": "PAID",
+                    "params": {
+                        "amount": "299",
+                        "currency": "INR",
+                        "transaction_id": "txn-loyalty-001"
+                    }
+                }
+            ],
+            "cancellation_terms": [
+                {
+                    "fulfillment_state": {
+                        "descriptor": {
+                            "name": "Subscription Active",
+                            "code": "ACTIVE"
+                        }
+                    },
+                    "cancellation_eligible": true,
+                    "cancellation_fee": {
+                        "amount": {
+                            "value": "0",
+                            "currency": "INR"
+                        }
+                    },
+                    "applicable_within": {
+                        "duration": "P30D"
+                    }
+                }
+            ]
+        }
+    }
+}

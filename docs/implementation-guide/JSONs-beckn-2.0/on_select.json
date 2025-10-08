@@ -1,0 +1,135 @@
+{
+  "context": {
+    "domain": "deg:ev-charging",
+    "action": "on_select",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "version": "2.0.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "PT15S",
+    "network_id": [
+      "beckn.energy.india"
+    ],
+    "schema_context": [
+      "https://becknprotocol.io/schemas/core/v2/Order/schema-context.jsonld",
+      "https://becknprotocol.io/schemas/energy/v1/ev-charging-context.jsonld",
+      "https://schema.org"
+    ]
+  },
+  "message": {
+    "order": {
+      "@context": "https://becknprotocol.io/schemas/core/v2/Order/schema-context.jsonld",
+      "@type": "beckn:Order",
+      "beckn:id": "order-draft-6743e9e2",
+      "beckn:state": "QUOTED",
+      "beckn:seller": "cpo1.com",
+      "beckn:buyer": "customer-bap-001",
+      "beckn:orderItems": [
+        {
+          "beckn:lineId": "line-001",
+          "beckn:orderedItem": "pe-charging-01",
+          "beckn:quantity": 1,
+          "beckn:price": {
+            "currency": "INR",
+            "value": 90
+          },
+          "beckn:orderItemAttributes": {
+            "@context": "https://example.org/schema/items/v1/EVCharging/item-attributes.schema.json",
+            "@type": "ev:EVChargingAttributes",
+            "ev:connectorType": "CCS2",
+            "ev:currentType": "AC",
+            "ev:maxPowerKW": 30,
+            "ev:availability": "AVAILABLE",
+            "ev:tariff": {
+              "schema:price": 18,
+              "schema:priceCurrency": "INR",
+              "ev:pricingUnit": "PER_KWH"
+            }
+          }
+        }
+      ],
+      "beckn:fulfillment": "fulfillment-001",
+      "beckn:totals": {
+        "@type": "schema:PriceSpecification",
+        "schema:priceCurrency": "INR",
+        "schema:price": 100,
+        "beckn:breakup": [
+          {
+            "schema:name": "Charging session cost (5 kWh @ ₹18.00/kWh)",
+            "beckn:itemId": "pe-charging-01",
+            "schema:price": 90,
+            "schema:priceCurrency": "INR"
+          },
+          {
+            "schema:name": "service fee",
+            "schema:price": 10,
+            "schema:priceCurrency": "INR"
+          }
+        ]
+      },
+      "beckn:orderAttributes": {
+        "provider-details": {
+          "beckn:id": "cpo1.com",
+          "schema:name": "CPO1 EV charging Company",
+          "schema:description": "CPO1 provides EV charging facility across India",
+          "schema:image": [
+            {
+              "@type": "schema:ImageObject",
+              "schema:url": "https://cpo1.com/images/logo.png"
+            }
+          ]
+        },
+        "fulfillment-details": {
+          "beckn:id": "fulfillment-001",
+          "beckn:mode": "RESERVATION",
+          "stops": [
+            {
+              "type": "START",
+              "time": {
+                "timestamp": "2025-09-24T10:00:00Z"
+              },
+              "location": {
+                "schema:geo": {
+                  "@type": "schema:GeoCoordinates",
+                  "schema:latitude": "28.345345",
+                  "schema:longitude": "77.389754"
+                },
+                "schema:name": "BlueCharge Connaught Place Station",
+                "schema:address": {
+                  "@type": "schema:PostalAddress",
+                  "schema:addressLocality": "Connaught Place, New Delhi"
+                }
+              },
+              "instructions": {
+                "short_desc": "Ground floor, Pillar Number 4"
+              }
+            },
+            {
+              "type": "STOP",
+              "time": {
+                "timestamp": "2025-09-24T11:00:00Z"
+              }
+            }
+          ],
+          "vehicle": {
+            "make": "Tata",
+            "model": "Nexon EV"
+          }
+        },
+        "fulfillment-type": "CHARGING"
+      }
+    }
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "context": {
+    "version": "2.0.0",
+    "action": "on_discover",
+    "domain": "deg:ev-charging",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+    "bpp_id": "example-bpp.com",
+    "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+    "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "message_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+    "timestamp": "2023-07-16T04:41:16Z",
+    "ttl": "PT30S",
+    "network_id": [
+      "beckn.energy.india"
+    ]
+  },
+  "catalogs": [
+    {
+      "@context": "https://becknprotocol.io/schemas/core/v1/Catalog/schema-context.jsonld",
+      "@type": "beckn:Catalog",
+      "beckn:id": "catalog-ev-charging-001",
+      "beckn:descriptor": {
+        "@type": "beckn:Descriptor",
+        "schema:name": "CPO1 EV Charging Network",
+        "beckn:shortDesc": "CPO1 provides EV charging facility across India",
+        "schema:image": [
+          "https://cpo1.com/images/logo.png"
+        ]
+      },
+      "beckn:providerId": "cpo1.com",
+      "beckn:items": [
+        {
+          "@context": "https://becknprotocol.io/schemas/core/v1/Item/schema-context.jsonld",
+          "@type": "beckn:Item",
+          "beckn:id": "pe-charging-01",
+          "beckn:descriptor": {
+            "@type": "beckn:Descriptor",
+            "schema:name": "EV Charger #1 (AC Fast Charger)"
+          },
+          "beckn:category": {
+            "@type": "schema:CategoryCode",
+            "schema:codeValue": "ev-charging",
+            "schema:name": "EV Charging"
+          },
+          "beckn:availableAt": [
+            {
+              "@type": "beckn:Location",
+              "beckn:gps": {
+                "schema:latitude": 28.345345,
+                "schema:longitude": 77.389754
+              },
+              "beckn:address": {
+                "schema:streetAddress": "Connaught Place",
+                "schema:addressLocality": "New Delhi",
+                "schema:addressCountry": "India"
+              }
+            }
+          ],
+          "beckn:rateable": true,
+          "beckn:rating": {
+            "@type": "beckn:Rating",
+            "beckn:ratingValue": 4.5,
+            "beckn:ratingCount": 120
+          },
+          "beckn:networkId": [
+            "beckn.energy.india"
+          ],
+          "beckn:provider": {
+            "beckn:id": "cpo1.com",
+            "beckn:descriptor": {
+              "@type": "beckn:Descriptor",
+              "schema:name": "CPO1 EV charging Company",
+              "beckn:shortDesc": "CPO1 provides EV charging facility across India"
+            }
+          },
+          "beckn:itemAttributes": {
+            "@context": "https://example.org/schema/items/v1/EVCharging/item-attributes.schema.json",
+            "@type": "ev:EVChargingAttributes",
+            "ev:connectorType": "CCS2",
+            "ev:currentType": "AC",
+            "ev:maxPowerKW": 30,
+            "ev:availability": "AVAILABLE",
+            "ev:tariff": {
+              "schema:price": 18,
+              "schema:priceCurrency": "INR",
+              "ev:pricingUnit": "PER_KWH"
+            }
+          }
+        },
+        {
+          "@context": "https://becknprotocol.io/schemas/core/v1/Item/schema-context.jsonld",
+          "@type": "beckn:Item",
+          "beckn:id": "pe-charging-02",
+          "beckn:descriptor": {
+            "@type": "beckn:Descriptor",
+            "schema:name": "EV Charger #2 (AC Fast Charger)",
+            "beckn:shortDesc": "Spot Booking"
+          },
+          "beckn:category": {
+            "@type": "schema:CategoryCode",
+            "schema:codeValue": "ev-charging",
+            "schema:name": "EV Charging"
+          },
+          "beckn:availableAt": [
+            {
+              "@type": "beckn:Location",
+              "beckn:gps": {
+                "schema:latitude": 28.345345,
+                "schema:longitude": 77.389754
+              },
+              "beckn:address": {
+                "schema:streetAddress": "Connaught Place",
+                "schema:addressLocality": "New Delhi",
+                "schema:addressCountry": "India"
+              }
+            }
+          ],
+          "beckn:rateable": true,
+          "beckn:rating": {
+            "@type": "beckn:Rating",
+            "beckn:ratingValue": 4.7,
+            "beckn:ratingCount": 85
+          },
+          "beckn:networkId": [
+            "beckn.energy.india"
+          ],
+          "beckn:provider": {
+            "beckn:id": "cpo1.com",
+            "beckn:descriptor": {
+              "@type": "beckn:Descriptor",
+              "schema:name": "CPO1 EV charging Company",
+              "beckn:shortDesc": "CPO1 provides EV charging facility across India"
+            }
+          },
+          "beckn:itemAttributes": {
+            "@context": "https://example.org/schema/items/v1/EVCharging/item-attributes.schema.json",
+            "@type": "ev:EVChargingAttributes",
+            "ev:connectorType": "CCS2",
+            "ev:currentType": "AC",
+            "ev:maxPowerKW": 30,
+            "ev:availability": "AVAILABLE",
+            "ev:providerTags": [
+              "SPOT"
+            ],
+            "ev:tariff": {
+              "schema:price": 21,
+              "schema:priceCurrency": "INR",
+              "ev:pricingUnit": "PER_KWH"
+            }
+          }
+        }
+      ],
+      "beckn:offers": [
+        {
+          "@context": "https://becknprotocol.io/schemas/core/v1/Offer/schema-context.jsonld",
+          "@type": "beckn:Offer",
+          "beckn:id": "offer-charging-01",
+          "beckn:descriptor": {
+            "@type": "beckn:Descriptor",
+            "schema:name": "Standard Charging Rate"
+          },
+          "beckn:provider": "cpo1.com",
+          "beckn:items": [
+            "pe-charging-01"
+          ],
+          "beckn:price": {
+            "currency": "INR",
+            "value": 18
+          }
+        },
+        {
+          "@context": "https://becknprotocol.io/schemas/core/v1/Offer/schema-context.jsonld",
+          "@type": "beckn:Offer",
+          "beckn:id": "offer-charging-02",
+          "beckn:descriptor": {
+            "@type": "beckn:Descriptor",
+            "schema:name": "Spot Booking Rate"
+          },
+          "beckn:provider": "cpo1.com",
+          "beckn:items": [
+            "pe-charging-02"
+          ],
+          "beckn:price": {
+            "currency": "INR",
+            "value": 21
+          }
+        }
+      ]
+    }
+  ]
+}

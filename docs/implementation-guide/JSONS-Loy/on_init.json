@@ -1,0 +1,157 @@
+{
+    "context": {
+      "domain": "deg:ev-charging",
+      "action": "on_init",
+      "location": {
+        "country": {
+          "code": "IND"
+        },
+        "city": {
+          "code": "std:080"
+        }
+      },
+      "version": "1.1.0",
+      "bap_id": "example-bap.com",
+      "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1",
+      "bpp_id": "example-bpp.com",
+      "bpp_uri": "https://example-bpp.com/pilot/bap/energy/v1",
+      "transaction_id": "6743e9e2-4fb5-487c-92b7-13ba8018f176",
+      "message_id": "on-init-loyalty-msg-001",
+      "timestamp": "2025:09:24:10:10:30"
+    },
+    "message": {
+      "order": {
+        "provider": {
+          "id": "cpo1.com",
+          "descriptor": {
+            "name": "CPO1 EV charging Company"
+          }
+        },
+        "items": [
+          {
+            "id": "loyalty-gold-pass",
+            "descriptor": {
+              "name": "CPO Gold Pass",
+              "code": "loyalty-subscription"
+            },
+            "price": {
+              "value": "299",
+              "currency": "INR"
+            },
+            "tags": [
+              {
+                "descriptor": {
+                  "code": "loyalty-activation",
+                  "name": "Loyalty Program Activation"
+                },
+                "list": [
+                  {
+                    "descriptor": {
+                      "code": "activation-time",
+                      "name": "Activation Time"
+                    },
+                    "value": "immediate"
+                  },
+                  {
+                    "descriptor": {
+                      "code": "validity-start",
+                      "name": "Validity Start"
+                    },
+                    "value": "2025:09:24:10:15:00"
+                  },
+                  {
+                    "descriptor": {
+                      "code": "validity-end",
+                      "name": "Validity End"
+                    },
+                    "value": "2025:10:24:10:15:00"
+                  },
+                  {
+                    "descriptor": {
+                      "code": "tier-level",
+                      "name": "Tier Level"
+                    },
+                    "value": "Gold"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "fulfillments": [
+          {
+            "id": "fulfillment-002",
+            "type": "DIGITAL",
+            "customer": {
+              "person": {
+                "name": "Kavya Nair"
+              },
+              "contact": {
+                "phone": "+91-9876543210",
+                "email": "kavya.nair@email.com"
+              }
+            }
+          }
+        ],
+        "billing": {
+          "name": "Kavya Nair",
+          "phone": "+91-9876543210",
+          "email": "kavya.nair@email.com",
+          "address": "123 MG Road, Indiranagar, Bengaluru, Karnataka 560038"
+        },
+        "quote": {
+          "price": {
+            "value": "299",
+            "currency": "INR"
+          },
+          "breakup": [
+            {
+              "item": {
+                "id": "loyalty-gold-pass",
+                "descriptor": {
+                  "name": "CPO Gold Pass"
+                }
+              },
+              "title": "Loyalty Subscription",
+              "price": {
+                "value": "299",
+                "currency": "INR"
+              }
+            }
+          ]
+        },
+        "payments": [
+          {
+            "id": "payment-001",
+            "type": "PRE-ORDER",
+            "status": "NOT-PAID",
+            "params": {
+              "amount": "299",
+              "currency": "INR",
+              "payment_link": "https://payments.cpo1.com/pay/loyalty-gold-pass-001"
+            }
+          }
+        ],
+        "cancellation_terms": [
+          {
+            "fulfillment_state": {
+              "descriptor": {
+                "name": "Subscription Active",
+                "code": "ACTIVE"
+              }
+            },
+            "cancellation_eligible": true,
+            "cancellation_fee": {
+              "amount": {
+                "value": "0",
+                "currency": "INR"
+              }
+            },
+            "applicable_within": {
+              "duration": "P30D"
+            }
+          }
+        ]
+      }
+    }
+  }

@@ -1,0 +1,118 @@
+### **Search**
+
+Consumer searches for EV charging stations with specific criteria including location, connector type, time window, finder fee etc.
+
+This is like typing "EV charger" into Google Maps and saying "find me charging stations within 5km of this location that have CCS2 connectors." The app sends this request to find available charging stations that match your criteria.
+
+```json
+{
+  "context": {
+    "ttl": "PT10M",
+    "action": "search",
+    "location": {
+      "country": {
+        "code": "IND"
+      },
+      "city": {
+        "code": "std:080"
+      }
+    },
+    "timestamp": "2024-08-05T09:21:12.618Z",
+    "message_id": "e138f204-ec0b-415d-9c9a-7b5bafe10bfe",
+    "transaction_id": "2ad735b9-e190-457f-98e5-9702fd895996",
+    "domain": "deg:ev-charging",
+    "version": "1.1.0",
+    "bap_id": "example-bap.com",
+    "bap_uri": "https://api.example-bap.com/pilot/bap/energy/v1"
+  },
+  "message": {
+    "intent": {
+      "descriptor": {
+        "name": "EV charger"
+      },
+      "item": {
+        "descriptor": {
+          "code": "CHARGER"
+        }
+      },
+      "fulfillment": {
+        "type": "CHARGING",
+        "stops": [
+          {
+            "location": {
+              "circle": {
+                "gps": "12.423423,77.325647",
+                "radius": {
+                  "value": "5",
+                  "unit": "km"
+                }
+              }
+            },
+            "type": "START-CHARGING",
+            "time": {
+              "range": {
+                  "start": "2025:09:24:10:00:00",
+                  "end": "2025:09:24:16:00:00"
+              }
+            }
+          }
+        ],
+        "tags": [
+          {
+            "list": [
+              {
+                "descriptor": {
+                  "code": "connector-type"
+                },
+                "value": "CCS2"
+              }
+            ]
+          }
+        ]
+      },
+     "tags": [
+        {
+          "descriptor": {
+            "code": "buyer-finder-fee"
+          },
+          "list": [
+            {
+              "descriptor": {
+                "code": "type"
+              },
+              "value": "PERCENTAGE"
+            },
+            {
+              "descriptor": {
+                "code": "value"
+              },
+              "value": "2"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+**Search Criteria:**
+* message.intent.descriptor.name: Free text search for charging stations (user can enter any search terms like "EV charger", "fast charging", etc.)  
+* message.intent.category.descriptor.code: Category-based search filter (e.g., "green-tariff" for eco-friendly charging options)
+
+**Location and Timing:**
+* message.intent.fulfillment.stops[].location.circle.gps: GPS coordinates for search center (REQUIRED - format: "latitude,longitude")  
+* message.intent.fulfillment.stops[].location.circle.radius.value: Search radius value (REQUIRED - e.g., "5")  
+* message.intent.fulfillment.stops[].location.circle.radius.unit: Unit of measurement (REQUIRED - e.g., "km", "miles")  
+* message.intent.fulfillment.stops[].time.range.start: Earliest acceptable charging start time (OPTIONAL - format: "YYYY:MM:DD:HH:MM:SS")  
+* message.intent.fulfillment.stops[].time.range.end: Latest acceptable charging end time (OPTIONAL - format: "YYYY:MM:DD:HH:MM:SS")
+
+**Connector Type Filtering:**
+* message.intent.fulfillment.tags.list.descriptor.code: Connector type filter code (e.g., "connector-type")  
+* message.intent.fulfillment.tags.list.value: Specific connector type value (e.g., "CCS2", "CHAdeMO", "Type 2")  
+* Used by BPP to filter charging stations that match vehicle requirements
+
+**Buyer Finder Fee Declaration:**
+* message.intent.tags.descriptor.code: Tag group to describe the buyer funder fee or the commission amount for the BAP as part of the transaction.  
+* Message.intent.tags.list.[descriptor.code="type"].value: Tag to define if the commission is a percentage of the order value or a flat amount. Possible values are "PERCENTAGE" and "AMOUNT"  
+* Message.intent.tags.list.[descriptor.code="value"].value: Tag to define the buyer finder fee value.

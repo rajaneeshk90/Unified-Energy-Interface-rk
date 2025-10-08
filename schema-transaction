@@ -1,0 +1,5 @@
+https://becknprotocol.io/schemas/core/v1/Fulfillment/schema-context.jsonld
+https://becknprotocol.io/schemas/core/v1/Invoice/schema-context.jsonld
+https://becknprotocol.io/schemas/core/v1/Order/schema-context.jsonld
+https://becknprotocol.io/schemas/core/v1/Party/schema-context.jsonld
+https://becknprotocol.io/schemas/core/v1/Payment/schema-context.jsonld
